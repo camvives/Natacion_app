@@ -1,28 +1,26 @@
-# Author: Clinton Daniel, University of South Florida
-# Date: 4/4/2023
-# Description: This is a Flask App that uses SQLite3 to
-# execute (C)reate, (R)ead, (U)pdate, (D)elete operations
-
+""""""
+import sqlite3
 from flask import Flask
 from flask import render_template
 from flask import request
-import sqlite3
+
 
 app = Flask(__name__)
 
-# Home Page route
 @app.route("/")
 def home():
+    """Home page route"""
     return render_template("home.html")
 
-# Route to form used to add a new student to the database
 @app.route("/enternew")
 def enternew():
-    return render_template("student.html")
+    """Route to form used to add a new swimmer to the database"""
+    return render_template("nadador.html")
 
-# Route to add a new record (INSERT) student data to the database
+
 @app.route("/addrec", methods = ['POST', 'GET'])
 def addrec():
+    """Route to add a new record (INSERT) swimmer data to the database"""
     # Data will be available from POST submitted by the form
     if request.method == 'POST':
         try:
@@ -136,3 +134,6 @@ def delete():
             con.close()
             # Send the transaction message to result.html
             return render_template('result.html',msg=msg)
+        
+if __name__ == "__main__":
+    app.run(debug=True)

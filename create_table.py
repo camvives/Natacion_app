@@ -1,21 +1,60 @@
-# Author: Clinton Daniel, University of South Florida
-# Date: 4/4/2023
-# Description: This python script assumes that you already have
-# a database.db file at the root of your workspace.
-# This python script will CREATE a table called students 
-# in the database.db using SQLite3 which will be used
-# to store the data collected by the forms in this app
-# Execute this python script before testing or editing this app code. 
-# Open a python terminal and execute this script:
-# python create_table.py
+"""Create database and all tables to run the app"""
 
 import sqlite3
 
 conn = sqlite3.connect('database.db')
 print("Connected to database successfully")
 
-conn.execute('CREATE TABLE students (name TEXT, addr TEXT, city TEXT, zip TEXT)')
-print("Created table successfully!")
+conn.execute("""
+    CREATE TABLE IF NOT EXISTS Nadadores (
+        Id INTEGER PRIMARY KEY,
+        Idclub INTEGER,
+        idCategoria INTEGER,
+        NombreApellido TEXT,
+        sexo TEXT,
+        FOREIGN KEY (Idclub) REFERENCES Clubes(Id),
+        FOREIGN KEY (idCategoria) REFERENCES Categorias(Id)
+    )
+""")
+
+# Create the Categorias table
+conn.execute("""
+    CREATE TABLE IF NOT EXISTS Categorias (
+        Id INTEGER PRIMARY KEY,
+        descripcion TEXT
+    )
+""")
+
+# Create the Clubes table
+conn.execute("""
+    CREATE TABLE IF NOT EXISTS Clubes (
+        Id INTEGER PRIMARY KEY,
+        descripcion TEXT
+    )
+""")
+
+# Create the Nadadores_Pruebas table
+conn.execute("""
+    CREATE TABLE IF NOT EXISTS Nadadores_Pruebas (
+        IdNadador INTEGER,
+        IdPrueba INTEGER,
+        Fecha TEXT,
+        TiempoPreInscripcion TEXT,
+        TiempoCompeticion TEXT,
+        PRIMARY KEY (IdNadador, IdPrueba),
+        FOREIGN KEY (IdNadador) REFERENCES Nadadores(Id),
+        FOREIGN KEY (IdPrueba) REFERENCES Pruebas(IdPrueba)
+    )
+""")
+
+# Create the Pruebas table
+conn.execute("""
+    CREATE TABLE IF NOT EXISTS Pruebas (
+        IdPrueba INTEGER PRIMARY KEY,
+        descripcion TEXT
+    )
+""")
+
+print("Tables created successfully!")
 
 conn.close()
-
