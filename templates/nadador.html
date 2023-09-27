@@ -6,57 +6,99 @@ Nuevo Nadador
 <section>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <form action="{{ url_for('addrec') }}" method="POST">
-                    <h2 class="mt-5 mb-4 title-background ">Registrar un nuevo nadador</h2>
-                    <div class="form-group row mt-5">
-                        <label for="inputName" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Nombre y Apellido</label>
-                        <div class="col-sm-8">
-                          <input type="email" class="form-control" id="inputName">
-                        </div>
-                      </div>
-                      <fieldset class="form-group mt-3">
-                        <div class="row">
-                          <legend class="col-form-label col-sm-4 pt-0 text-white" style="font-size: 18px;">Sexo</legend>
-                          <div class="col-sm-8">
-                            <div class="form-check">
-                              <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
-                              <label class="form-check-label" for="gridRadios1">
-                                Femenino
-                              </label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="mt-5 mb-4 title-background ">Registrar un nuevo nadador</h2>
+                            <div class="form-group row mt-3">
+                                <label for="inputName" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Nombre y Apellido</label>
+                                <div class="col-sm-8">
+                                <input type="text" class="form-control" id="inputName" required>
+                                </div>
                             </div>
-                            <div class="form-check">
-                              <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
-                              <label class="form-check-label" for="gridRadios2">
-                                Masculino
-                              </label>
+                            <fieldset class="form-group mt-3">
+                                <div class="row">
+                                <legend class="col-form-label col-sm-4 pt-0 text-white" style="font-size: 18px;">Sexo</legend>
+                                <div class="col-sm-8">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" required>
+                                    <label class="form-check-label" for="gridRadios1">
+                                        Femenino
+                                    </label>
+                                    </div>
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2" required>
+                                    <label class="form-check-label" for="gridRadios2">
+                                        Masculino
+                                    </label>
+                                    </div>
+                                </div>
+                                </div>
+                            </fieldset>
+                            <div class="form-group row mt-3">
+                                <label for="inputCategoria" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Categoría</label>
+                                <div class="col-sm-4">
+                                    <select id="inputCategoria" class="form-control" required>
+                                        <option value="" selected disabled>Seleccionar</option>
+                                        <option>Pre-Infantil</option>
+                                        <option>...</option>
+                                    </select>
+                                </div>
                             </div>
-                          </div>
+                            <div class="form-group row mt-3">
+                                <label for="inputClub" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Club</label>
+                                <div class="col-sm-6">
+                                    <select id="inputClub" class="form-control" required>
+                                        <option value="" selected disabled>Seleccionar</option>
+                                        <option>ALUMNI</option>
+                                        <option>...</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                      </fieldset>
-                      <div class="form-group row mt-3">
-                        <label for="inputCategoria" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Categoría</label>
-                        <div class="col-sm-4">
-                            <select id="inputCategoria" class="form-control">
-                                <option selected>Pre-Infantil</option>
-                                <option>...</option>
-                              </select>
+                        <div class="col border-left">
                         </div>
-                      </div>
-                      <div class="form-group row mt-3">
-                        <label for="inputClub" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Club</label>
-                        <div class="col-sm-6">
-                            <select id="inputClub" class="form-control">
-                                <option selected>ALUMNI</option>
-                                <option>...</option>
-                              </select>
+                        <div class="col-md-5">
+                            <h3 class="mt-5 mb-4 title-background ">Pruebas</h3>
+                            <div class="form-group row mt-1">
+                                <form>
+                                    <div id="form-container">
+                                        <!-- Initial row -->
+                                        <div class="form-group row">
+                                            <div class="col-sm-5 mt-3">
+                                                <select id="inputPrueba" class="form-control form-control-sm" required>
+                                                    <option>100 Libre</option>
+                                                    <option>...</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="number" class="form-control form-control-sm" placeholder="mm" required>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="number" class="form-control form-control-sm" placeholder="ss" required>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="number" class="form-control form-control-sm" placeholder="sss" required>
+                                            </div>
+                                            <div class="col-sm-1 mt-3">
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="form-group row">
+                                        <div class="col-sm-10 mt-3">
+                                            <button type="button" class="btn btn-secondary" id="add-row">Añadir prueba</button>
+                                        </div>
+                                    </div>
+                                </form>
                         </div>
-                      </div>
-                      <div class="form-group row mt-5">
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-success">Registrar Nadador</button>
-                        </div>
-                      </div>           
+                    </div>
+                    <div class="d-flex justify-content-end mt-5">
+                        <button type="submit" class="btn btn-success w-80">Registrar Nadador</button>
+                    </div>
+                    
                 </form>
             </div>
         </div>
@@ -65,4 +107,59 @@ Nuevo Nadador
     <div class='air air1'></div>
     <div class='air air2'></div>
 </section>
+
+
+
+<script>
+        function removeRow(button) {
+        // Get the parent element of the button, which is the col-sm-1 div
+        var column = button.parentNode;
+
+        // Get the parent row of the col-sm-1 div
+        var row = column.parentNode;
+
+        // Remove the entire row
+        row.parentNode.removeChild(row);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const addButton = document.getElementById("add-row");
+        const formContainer = document.getElementById("form-container");
+
+        addButton.addEventListener("click", function () {
+            // Create a new row
+            const newRow = document.createElement("div");
+            newRow.classList.add("form-group", "row");
+
+            // Add form elements to the new row (customize as needed)
+            newRow.innerHTML = `
+            <div class="form-group row">
+                                            <div class="col-sm-5 mt-3">
+                                                <select id="inputPrueba" class="form-control form-control-sm" required>
+                                                    <option selected>100 Libre</option>
+                                                    <option>...</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="text" class="form-control form-control-sm" placeholder="mm" required>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="text" class="form-control form-control-sm" placeholder="ss" required>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="text" class="form-control form-control-sm" placeholder="sss" required>
+                                            </div>
+                                            <div class="col-sm-1 mt-3">
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
+                                            </div>
+                                        </div>
+                                    </div>
+            `;
+
+            // Append the new row to the form container
+            formContainer.appendChild(newRow);
+        });
+
+    });
+</script>
 {% endblock %}
