@@ -9,9 +9,9 @@ conn.execute("""
     CREATE TABLE IF NOT EXISTS Nadadores (
         Id INTEGER PRIMARY KEY,
         Idclub INTEGER,
-        idCategoria INTEGER,
+        IdCategoria INTEGER,
         NombreApellido TEXT,
-        sexo TEXT,
+        Sexo TEXT,
         FOREIGN KEY (Idclub) REFERENCES Clubes(Id),
         FOREIGN KEY (idCategoria) REFERENCES Categorias(Id)
     )

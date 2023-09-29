@@ -1,9 +1,9 @@
-""""""
+"""Flask routes"""
 import sqlite3
+import datetime
 from flask import Flask
 from flask import render_template
 from flask import request
-
 
 app = Flask(__name__)
 
@@ -15,7 +15,22 @@ def home():
 @app.route("/enternew")
 def enternew():
     """Route to form used to add a new swimmer to the database"""
-    return render_template("nadador.html")
+
+    con = sqlite3.connect("database.db")
+    con.row_factory = sqlite3.Row
+
+    cur = con.cursor()
+
+    cur.execute("SELECT * FROM Categorias")
+    categorias = cur.fetchall()
+    cur.execute("SELECT * FROM Clubes")
+    clubes = cur.fetchall()
+    cur.execute("SELECT * FROM Pruebas")
+    pruebas = cur.fetchall()
+
+    con.close()
+
+    return render_template("nadador.html", categorias=categorias, clubes=clubes, pruebas=pruebas)
 
 
 @app.route("/addrec", methods = ['POST', 'GET'])
@@ -24,31 +39,53 @@ def addrec():
     # Data will be available from POST submitted by the form
     if request.method == 'POST':
         try:
-            nm = request.form['nm']
-            addr = request.form['add']
-            city = request.form['city']
-            zip = request.form['zip']
+            name = request.form['nombap']
+            sex = int(request.form['Sexo'])
+            cat = int(request.form['Cat'])
+            club = int(request.form['Club'])
+            pruebas = request.form.getlist('prueba[]')
+            mm_values = request.form.getlist('mm[]')
+            ss_values = request.form.getlist('ss[]')
+            sss_values = request.form.getlist('sss[]')
 
-            # Connect to SQLite3 database and execute the INSERT
+            # Format times with leading zeros
+            mm_values = [f'{int(mm):02d}' for mm in mm_values]
+            ss_values = [f'{int(ss):02d}' for ss in ss_values]
+            sss_values = [f'{int(sss):02d}' for sss in sss_values]
+            times = [f'{mm}:{ss}:{sss}' for mm, ss, sss in zip(mm_values, ss_values, sss_values)]
+
+            current_date = datetime.date.today()
+            date_string = current_date.strftime("%Y-%m-%d")
+
+            print(date_string)
+
+            #Connect to SQLite3 database and execute the INSERT
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO students (name, addr, city, zip) VALUES (?,?,?,?)",(nm, addr, city, zip))
-
+                cur.execute("INSERT INTO Nadadores (NombreApellido, Sexo, IdCategoria, Idclub) VALUES (?,?,?,?)",(name, sex, cat, club))
+                inserted_id = cur.lastrowid
+                
+                for (prueba, time) in enumerate(zip(pruebas, times)):
+                    cur.execute("""INSERT INTO Nadadores_Pruebas (IdNadador, IdPrueba, Fecha, TiempoPreInscripcion)
+                                VALUES (?,?,?,?)""", (inserted_id, int(prueba), date_string, time[1]))
+                                
                 con.commit()
                 msg = "Record successfully added to database"
-        except:
+        except ConnectionAbortedError:
             con.rollback()
             msg = "Error in the INSERT"
-
+            return render_template('result.html', msg=msg)
         finally:
-            con.close()
-            # Send the transaction message to result.html
-            return render_template('result.html',msg=msg)
+            if con:
+                con.close()
 
-# Route to SELECT all data from the database and display in a table      
+        # Send the transaction message to result.html
+        return render_template('result.html', msg=msg)
+
+# Route to SELECT all data from the database and display in a table
 @app.route('/list')
 def list():
-    # Connect to the SQLite3 datatabase and 
+    # Connect to the SQLite3 datatabase and
     # SELECT rowid and all Rows from the students table.
     con = sqlite3.connect("database.db")
     con.row_factory = sqlite3.Row
@@ -61,7 +98,7 @@ def list():
     # Send the results of the SELECT to the list.html page
     return render_template("list.html",rows=rows)
 
-# Route that will SELECT a specific row in the database then load an Edit form 
+# Route that will SELECT a specific row in the database then load an Edit form
 @app.route("/edit", methods=['POST','GET'])
 def edit():
     if request.method == 'POST':
@@ -112,7 +149,7 @@ def editrec():
             # Send the transaction message to result.html
             return render_template('result.html',msg=msg)
 
-# Route used to DELETE a specific record in the database    
+# Route used to DELETE a specific record in the database
 @app.route("/delete", methods=['POST','GET'])
 def delete():
     if request.method == 'POST':
@@ -134,6 +171,6 @@ def delete():
             con.close()
             # Send the transaction message to result.html
             return render_template('result.html',msg=msg)
-        
+
 if __name__ == "__main__":
     app.run(debug=True)
