@@ -40,7 +40,7 @@ def addrec():
     if request.method == 'POST':
         try:
             name = request.form['nombap']
-            sex = int(request.form['Sexo'])
+            sex = request.form['Sexo']
             cat = int(request.form['Cat'])
             club = int(request.form['Club'])
             pruebas = request.form.getlist('prueba[]')
@@ -84,19 +84,26 @@ def addrec():
 
 # Route to SELECT all data from the database and display in a table
 @app.route('/list')
-def list():
+def list_nadadores():
+    """Show list of swimmers and data"""
     # Connect to the SQLite3 datatabase and
-    # SELECT rowid and all Rows from the students table.
+    # SELECT all Rows from the Nadadores table.
     con = sqlite3.connect("database.db")
     con.row_factory = sqlite3.Row
 
     cur = con.cursor()
-    cur.execute("SELECT rowid, * FROM students")
+    cur.execute(""" SELECT n.Id, n.Sexo, n.NombreApellido, c.descripcion as Club, cat.descripcion as Categoria FROM Nadadores n
+                    INNER JOIN Clubes c on n.IdClub = c.Id
+                    INNER JOIN Categorias cat on n.IdCategoria = cat.Id""")
 
     rows = cur.fetchall()
     con.close()
     # Send the results of the SELECT to the list.html page
     return render_template("list.html",rows=rows)
+
+@app.route("/view", methods=['POST', 'GET'])
+def view():
+    return render_template("home.html")
 
 # Route that will SELECT a specific row in the database then load an Edit form
 @app.route("/edit", methods=['POST','GET'])
