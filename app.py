@@ -70,7 +70,7 @@ def addrec():
                                 VALUES (?,?,?,?)""", (inserted_id, int(prueba), date_string, time[1]))
                                 
                 con.commit()
-                msg = "Record successfully added to database"
+                msg = "Registro añadido a la base de datos"
         except ConnectionAbortedError:
             con.rollback()
             msg = "Error in the INSERT"
