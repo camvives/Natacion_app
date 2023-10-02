@@ -1,26 +1,187 @@
 {% extends "layout.html" %}
 {% block title %}
-Edit Student
+Editar nadador
 {% endblock %}
 {% block content %}
-        <h1>Edit Student Record</h1>
-        {% for row in rows %}
-        <form action="{{ url_for('editrec') }}" method="POST">
-            <h3 style="color:blue">Student ID: {{ row['rowid']}}</h3>
-            <input type="hidden" name="rowid" value="{{ row['rowid'] }}">
-            Name<br>
-            <input type="text" name="nm" value="{{ row['name'] }}"/><br>
+<section>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <form action="{{ url_for('editrec') }}" method="POST">
+                    <input type="hidden" name="id" value="{{ row['Id'] }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="mt-5 mb-4 title-background ">Editar Nadador</h2>
+                            <div class="form-group row mt-3">
+                                <label for="inputName" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Nombre y Apellido</label>
+                                <div class="col-sm-8">
+                                <input type="text" class="form-control" id="inputName" name="nombap" value="{{ row['NombreApellido'] }}" required>
+                                </div>
+                            </div>
+                            <fieldset class="form-group mt-3">
+                                <div class="row">
+                                <legend class="col-form-label col-sm-4 pt-0 text-white" style="font-size: 18px;">Sexo</legend>
+                                <div class="col-sm-8">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Sexo" id="gridRadios1" value="Femenino" {% if row['Sexo'] == 'Femenino' %}checked{% endif %} required>
+                                        <label class="form-check-label" for="gridRadios1">
+                                            Femenino
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="Sexo" id="gridRadios2" value="Masculino" {% if row['Sexo'] == 'Masculino' %}checked{% endif %} required>
+                                        <label class="form-check-label" for="gridRadios2">
+                                            Masculino
+                                        </label>
+                                    </div>
+                                </div>
+                                </div>
+                            </fieldset>
+                            <div class="form-group row mt-3">
+                                <label for="inputCategoria" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Categoría</label>
+                                <div class="col-sm-4">
+                                    <select id="inputCategoria" class="form-control" name="Cat" required>
+                                        <option value="" disabled>Seleccionar</option>
+                                        {% for categoria in categorias %}
+                                        <option value="{{ categoria.Id }}" {% if categoria.Id == row['IdCategoria'] %}selected{% endif %}>
+                                            {{ categoria.descripcion }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                </div>
+                            </div>
+                            <div class="form-group row mt-3">
+                                <label for="inputClub" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Club</label>
+                                <div class="col-sm-6">
+                                    <select id="inputClub" class="form-control" name="Club" required>
+                                        <option value="" selected disabled>Seleccionar</option>
+                                        {% for club in clubes %}
+                                        <option value="{{ club.Id }}" {% if club.Id == row['IdClub'] %}selected{% endif %}>
+                                            {{ club.descripcion }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col border-left">
+                        </div>
+                        <div class="col-md-5">
+                            <h3 class="mt-5 mb-4 title-background ">Pruebas</h3>
+                            <div class="form-group row mt-1">
+                                <form>
+                                    <div id="form-container">
+                                        <!-- Initial row -->
+                                       
+                                        <div class="form-group row">
+                                            {% for prueban in pruebas_nadador %}
+                                            <div class="form-group row">
+                                            <div class="col-sm-4 mt-3">
+                                                <select id="inputPrueba" class="form-control form-control-sm" name="prueba[]" required>
+                                                    <option value="" selected disabled>Seleccionar</option>
+                                                    {% for prueba in pruebas %}
+                                                    <option value="{{ prueba.IdPrueba }}" {% if prueba.IdPrueba == prueban['IdPrueba'] %}selected{% endif %}>
+                                                        {{ prueba.descripcion }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="number" min="0" class="form-control form-control-sm" placeholder="mm" name="mm[]" value="{{ prueban['TiempoPreInscripcion'][:2] | int }}" required>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="number" min="0" class="form-control form-control-sm" placeholder="ss" name="ss[]"  value="{{ prueban['TiempoPreInscripcion'][3:5] | int }}"  required>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="number" min="0" class="form-control form-control-sm" placeholder="sss" name="sss[]" value="{{ prueban['TiempoPreInscripcion'][6:9] | int }}"  required>
+                                            </div>
+                                            <div class="col-sm-1 mt-3">
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
+                                            </div>
+                                            
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                        
+                                    </div>
+                        
+                                    <div class="form-group row">
+                                        <div class="col-sm-10 mt-3">
+                                            <button type="button" class="btn btn-secondary" id="add-row">Añadir prueba</button>
+                                        </div>
+                                    </div>
+                                </form>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-5">
+                        <button type="submit" class="btn btn-success w-80">Registrar cambios</button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
 
-            Address<br>
-            <input type="text" name="add" value="{{row['addr']}}"/><br>
+    <div class='air air1'></div>
+    <div class='air air2'></div>
+</section>
 
-            City<br>
-            <input type="text" name="city" value="{{ row['city'] }}"/><br>
 
-            Zip Code<br>
-            <input type="text" name="zip" value="{{ row['zip'] }}"/><br>
 
-            <input type="submit" value="Submit" /><br>
-        </form>
-        {% endfor %}
+<script>
+        function removeRow(button) {
+        // Get the parent element of the button, which is the col-sm-1 div
+        var column = button.parentNode;
+
+        // Get the parent row of the col-sm-1 div
+        var row = column.parentNode;
+
+        // Remove the entire row
+        row.parentNode.removeChild(row);
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const addButton = document.getElementById("add-row");
+        const formContainer = document.getElementById("form-container");
+
+        addButton.addEventListener("click", function () {
+            // Create a new row
+            const newRow = document.createElement("div");
+            newRow.classList.add("form-group", "row");
+
+            // Add form elements to the new row (customize as needed)
+            newRow.innerHTML = `
+            <div class="form-group row">
+                                            <div class="col-sm-5 mt-3">
+                                                <select id="inputPrueba" class="form-control form-control-sm"  name="prueba[]" required>
+                                                    <option value="" selected disabled>Seleccionar</option>
+                                                    {% for prueba in pruebas %}
+                                                    <option value="{{ prueba.IdPrueba }}">{{ prueba.descripcion }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="number"  min="0" class="form-control form-control-sm" placeholder="mm" name="mm[]" required>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="number"  min="0" class="form-control form-control-sm" placeholder="ss" name="ss[]" required>
+                                            </div>
+                                            <div class="col-sm-2 mt-3">
+                                                <input type="number" min="0" class="form-control form-control-sm" placeholder="sss" name="sss[]" required>
+                                            </div>
+                                            <div class="col-sm-1 mt-3">
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
+                                            </div>
+                                        </div>
+                                    </div>
+            `;
+
+            // Append the new row to the form container
+            formContainer.appendChild(newRow);
+        });
+
+    });
+</script>
 {% endblock %}

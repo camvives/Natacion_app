@@ -48,18 +48,14 @@ def addrec():
             ss_values = request.form.getlist('ss[]')
             sss_values = request.form.getlist('sss[]')
 
-            print(pruebas)
-
             # Format times with leading zeros
             mm_values = [f'{int(mm):02d}' for mm in mm_values]
             ss_values = [f'{int(ss):02d}' for ss in ss_values]
-            sss_values = [f'{int(sss):02d}' for sss in sss_values]
+            sss_values = [f'{int(sss):03d}' for sss in sss_values]
             times = [f'{mm}:{ss}:{sss}' for mm, ss, sss in zip(mm_values, ss_values, sss_values)]
 
             current_date = datetime.date.today()
             date_string = current_date.strftime("%Y-%m-%d")
-
-            print(date_string)
 
             #Connect to SQLite3 database and execute the INSERT
             with sqlite3.connect('database.db') as con:
@@ -144,7 +140,6 @@ def view():
                     INNER JOIN Pruebas p on np.IdPrueba = p.IdPrueba
                     WHERE np.IdNadador = ?""", (id_nadador, ))
         pruebas = cur.fetchall()
-        print(pruebas)
     except ConnectionAbortedError:
         row = None
     finally:
@@ -155,54 +150,92 @@ def view():
 # Route that will SELECT a specific row in the database then load an Edit form
 @app.route("/edit", methods=['POST','GET'])
 def edit():
+    """Edit swimmer information"""
     if request.method == 'POST':
         try:
             # Use the hidden input value of id from the form to get the rowid
-            id = request.form['id']
+            id_nadador = request.form.get('id')
             # Connect to the database and SELECT a specific rowid
             con = sqlite3.connect("database.db")
             con.row_factory = sqlite3.Row
 
             cur = con.cursor()
-            cur.execute("SELECT rowid, * FROM students WHERE rowid = " + id)
+            cur.execute(""" SELECT * FROM Nadadores n
+                            WHERE n.Id = ?""",(id_nadador, ) )
+            row = cur.fetchone()
 
-            rows = cur.fetchall()
-        except:
-            id=None
+            cur.execute(""" SELECT * FROM Nadadores_Pruebas np
+                            INNER JOIN Pruebas p on np.IdPrueba = p.IdPrueba
+                            WHERE np.IdNadador = ?""",(id_nadador, ))
+            pruebas_nadador = cur.fetchall()
+
+            cur.execute("SELECT * FROM Categorias")
+            categorias = cur.fetchall()
+            cur.execute("SELECT * FROM Clubes")
+            clubes = cur.fetchall()
+            cur.execute("SELECT * FROM Pruebas")
+            pruebas = cur.fetchall()
+
+
+        except sqlite3.Error:
+            row = None
         finally:
             con.close()
 
         # Send the specific record of data to edit.html
-        return render_template("edit.html",rows=rows)
+        return render_template("edit.html",row=row, categorias=categorias,
+                               clubes=clubes, pruebas=pruebas,
+                               pruebas_nadador=pruebas_nadador)
 
-# Route used to execute the UPDATE statement on a specific record in the database
+
 @app.route("/editrec", methods=['POST','GET'])
 def editrec():
+    """Route used to execute the UPDATE statement on a specific record in the database"""
     # Data will be available from POST submitted by the form
     if request.method == 'POST':
         try:
             # Use the hidden input value of id from the form to get the rowid
-            rowid = request.form['rowid']
-            nm = request.form['nm']
-            addr = request.form['add']
-            city = request.form['city']
-            zip = request.form['zip']
+            id_nadador = request.form.get('id')
+            name = request.form['nombap']
+            sex = request.form['Sexo']
+            cat = int(request.form['Cat'])
+            club = int(request.form['Club'])
+            pruebas = request.form.getlist('prueba[]')
+            mm_values = request.form.getlist('mm[]')
+            ss_values = request.form.getlist('ss[]')
+            sss_values = request.form.getlist('sss[]')
+
+            # Format times with leading zeros
+            mm_values = [f'{int(mm):02d}' for mm in mm_values]
+            ss_values = [f'{int(ss):02d}' for ss in ss_values]
+            sss_values = [f'{int(sss):03d}' for sss in sss_values]
+            times = [f'{mm}:{ss}:{sss}' for mm, ss, sss in zip(mm_values, ss_values, sss_values)]
+
+            current_date = datetime.date.today()
+            date_string = current_date.strftime("%Y-%m-%d")
 
             # UPDATE a specific record in the database based on the rowid
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("UPDATE students SET name='"+nm+"', addr='"+addr+"', city='"+city+"', zip='"+zip+"' WHERE rowid="+rowid)
+                cur.execute("DELETE FROM Nadadores_Pruebas WHERE IdNadador = ?", (id_nadador, ))
+                cur.execute("""UPDATE Nadadores SET NombreApellido = ?, Sexo = ?,
+                            IdCategoria = ?, Idclub = ? WHERE Id = ?""",
+                            (name, sex, cat, club, id_nadador))
+
+                for (prueba, time) in zip(pruebas, times):
+                    cur.execute("""INSERT INTO Nadadores_Pruebas
+                                (IdNadador, IdPrueba, Fecha, TiempoPreInscripcion)
+                                VALUES (?,?,?,?)""",
+                                (id_nadador, int(prueba), date_string, time))
 
                 con.commit()
-                msg = "Record successfully edited in the database"
-        except:
+        except sqlite3.Error:
             con.rollback()
-            msg = "Error in the Edit: UPDATE students SET name="+nm+", addr="+addr+", city="+city+", zip="+zip+" WHERE rowid="+rowid
 
         finally:
             con.close()
-            # Send the transaction message to result.html
-            return render_template('result.html',msg=msg)
+
+        return list_nadadores()
 
 
 @app.route("/delete", methods=['POST','GET'])
@@ -214,12 +247,12 @@ def delete():
             rowid = request.form['id']
             # Connect to the database and DELETE a specific record based on rowid
             with sqlite3.connect('database.db') as con:
-                    cur = con.cursor()
-                    cur.execute("DELETE FROM adadores_pruebas WHERE Id="+rowid)
-                    cur.execute("DELETE FROM nadadores WHERE Id="+rowid)
+                cur = con.cursor()
+                cur.execute("DELETE FROM adadores_pruebas WHERE Id="+rowid)
+                cur.execute("DELETE FROM nadadores WHERE Id="+rowid)
 
-                    con.commit()
-                    msg = "Record successfully deleted from the database"
+                con.commit()
+                msg = "Record successfully deleted from the database"
         except ConnectionAbortedError:
             con.rollback()
             msg = "Error in the DELETE"
