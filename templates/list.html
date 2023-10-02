@@ -4,23 +4,20 @@ Lista Nadadores
 {% endblock %}
 {% block content %}
 <!-- Modal for Delete Confirmation -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title" id="exampleModalLabel">Confirmar 👀</h5>
             </div>
             <div class="modal-body">
-                Estas seguro de que querés eliminar este nadador? Se van a eliminar sus pruebas a
+                ¿Estás seguro que querés eliminar este nadador? 
+                <br>
+                Se van a eliminar también sus pruebas asociadas 😐
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <!-- Add a data-id attribute to store the ID of the record to be deleted -->
-                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Delete</button>
-            </div>
+                <button type="button" class="btn btn-danger" id="submitFormButton">Eliminar</button>            </div>
+            
         </div>
     </div>
 </div>
@@ -65,12 +62,12 @@ Lista Nadadores
                                 </button>
                             </form>
                             
-                            <form action="{{url_for('delete')}}" method="POST" style="display: inline;" class="delete-form">
-                                <input type="hidden" name="id" value="{{ row['Id'] }}">
+                            <form action="{{ url_for('delete') }}" method="POST" style="display: inline;" class="delete-form" id="deleteForm">
+                                <input type="hidden" name="id_del" value="{{ row['Id'] }}">
                                 <button type="button" class="open-delete-modal" style="background: none; border: none; cursor: pointer;">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                            </form>                            
+                            </form>                                               
                         </td>
                     </tr>
                     {% endfor %}
@@ -91,6 +88,39 @@ Lista Nadadores
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
+    });
+
+    $(document).ready(function () {
+
+        // Submit the form when the "Eliminar" button in the modal is clicked
+        $("#submitFormButton").click(function () {
+            // Trigger the form submission
+            $("#deleteForm").submit();
+        });
+
+        $(document).ready(function () {
+            $(".open-delete-modal").on("click", function () {
+                // Get the ID from the data attribute of the clicked button's parent form
+                var rowId = $(this).closest(".delete-form").find("input[name='id_del']").val();
+                console.log("rowId:", rowId);
+
+                // Send the rowId to the server using AJAX
+                $.ajax({
+                    type: "POST",
+                    url: "/delete", // Replace with the actual URL of your server endpoint
+                    data: { rowId: rowId }, // Send the rowId as data
+                    error: function (error) {
+                        // Handle errors if any
+                        console.error("Error:", error);
+                    }
+                });
+
+                // Show the modal
+                $("#deleteModal").modal("show");
+            });
+    	    });
+
+
     });
 </script>
 

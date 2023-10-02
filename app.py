@@ -244,23 +244,23 @@ def delete():
     if request.method == 'POST':
         try:
              # Use the hidden input value of id from the form to get the rowid
-            rowid = request.form['id']
+            id_nadador = request.form.get('rowId')
+            print(id_nadador)
             # Connect to the database and DELETE a specific record based on rowid
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("DELETE FROM adadores_pruebas WHERE Id="+rowid)
-                cur.execute("DELETE FROM nadadores WHERE Id="+rowid)
+                cur.execute("DELETE FROM nadadores_pruebas WHERE IdNadador= ?",(id_nadador, ))
+                cur.execute("DELETE FROM nadadores WHERE Id=?",(id_nadador, ))
 
                 con.commit()
-                msg = "Record successfully deleted from the database"
         except ConnectionAbortedError:
             con.rollback()
-            msg = "Error in the DELETE"
 
         finally:
             con.close()
 
-    return render_template('result.html',msg=msg)
+    return list_nadadores()
 
 if __name__ == "__main__":
     app.run(debug=True)
+ 
