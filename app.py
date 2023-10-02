@@ -48,6 +48,8 @@ def addrec():
             ss_values = request.form.getlist('ss[]')
             sss_values = request.form.getlist('sss[]')
 
+            print(pruebas)
+
             # Format times with leading zeros
             mm_values = [f'{int(mm):02d}' for mm in mm_values]
             ss_values = [f'{int(ss):02d}' for ss in ss_values]
@@ -62,13 +64,16 @@ def addrec():
             #Connect to SQLite3 database and execute the INSERT
             with sqlite3.connect('database.db') as con:
                 cur = con.cursor()
-                cur.execute("INSERT INTO Nadadores (NombreApellido, Sexo, IdCategoria, Idclub) VALUES (?,?,?,?)",(name, sex, cat, club))
+                cur.execute("""INSERT INTO Nadadores (NombreApellido, Sexo, IdCategoria, Idclub)
+                            VALUES (?,?,?,?)""",(name, sex, cat, club))
                 inserted_id = cur.lastrowid
-                
-                for (prueba, time) in enumerate(zip(pruebas, times)):
-                    cur.execute("""INSERT INTO Nadadores_Pruebas (IdNadador, IdPrueba, Fecha, TiempoPreInscripcion)
-                                VALUES (?,?,?,?)""", (inserted_id, int(prueba), date_string, time[1]))
-                                
+
+                for (prueba, time) in zip(pruebas, times):
+                    cur.execute("""INSERT INTO Nadadores_Pruebas
+                                (IdNadador, IdPrueba, Fecha, TiempoPreInscripcion)
+                                VALUES (?,?,?,?)""",
+                                (inserted_id, int(prueba), date_string, time))
+
                 con.commit()
                 msg = "Registro añadido a la base de datos"
         except ConnectionAbortedError:
@@ -86,24 +91,66 @@ def addrec():
 @app.route('/list')
 def list_nadadores():
     """Show list of swimmers and personal info"""
-    # Connect to the SQLite3 datatabase and
-    # SELECT all Rows from the Nadadores table.
-    con = sqlite3.connect("database.db")
-    con.row_factory = sqlite3.Row
+    try:
+        # Connect to the SQLite3 database and
+        # SELECT all Rows from the Nadadores table.
+        con = sqlite3.connect("database.db")
+        con.row_factory = sqlite3.Row
 
-    cur = con.cursor()
-    cur.execute(""" SELECT n.Id, n.Sexo, n.NombreApellido, c.descripcion as Club, cat.descripcion as Categoria FROM Nadadores n
-                    INNER JOIN Clubes c on n.IdClub = c.Id
-                    INNER JOIN Categorias cat on n.IdCategoria = cat.Id""")
+        cur = con.cursor()
+        cur.execute(""" SELECT n.Id, n.Sexo, n.NombreApellido, c.descripcion as Club,
+                        cat.descripcion as Categoria FROM Nadadores n
+                        INNER JOIN Clubes c on n.IdClub = c.Id
+                        INNER JOIN Categorias cat on n.IdCategoria = cat.Id""")
 
-    rows = cur.fetchall()
-    con.close()
-    # Send the results of the SELECT to the list.html page
-    return render_template("list.html",rows=rows)
+        rows = cur.fetchall()
+    except sqlite3.Error as error:
+        print("Database error:", error)
+        rows = []  # Initialize an empty result in case of an error.
+    finally:
+        if con:
+            con.close()
+
+    # Send the results of the SELECT (whether it's data or an empty list) to the list.html page
+    return render_template("list.html", rows=rows)
+
 
 @app.route("/view", methods=['POST', 'GET'])
 def view():
-    return render_template("home.html")
+    """Shows the personal information of the swimmer and the events in which he/she will compete"""
+    try:
+        # Use the hidden input value of 'id' from the request to get the rowid
+        id_nadador = request.form.get('id')
+
+        # Connect to the database and SELECT a specific rowid
+        con = sqlite3.connect("database.db")
+        con.row_factory = sqlite3.Row
+
+        cur = con.cursor()
+        cur.execute("""SELECT n.Id, n.Sexo, n.NombreApellido, c.descripcion as Club,
+                        cat.descripcion as Categoria FROM Nadadores n
+                        INNER JOIN Clubes c on n.IdClub = c.Id
+                        INNER JOIN Categorias cat on n.IdCategoria = cat.Id  
+                        WHERE n.Id = ?""", (id_nadador, ))
+
+        row = cur.fetchone()
+        cur.execute("""SELECT np.TiempoPreInscripcion,
+                        CASE 
+							WHEN TiempoCompeticion IS NULL THEN 'Aún no registrado'
+							ELSE TiempoCompeticion
+						END AS TiempoCompeticion,
+                                p.descripcion 
+                    FROM Nadadores_Pruebas np
+                    INNER JOIN Pruebas p on np.IdPrueba = p.IdPrueba
+                    WHERE np.IdNadador = ?""", (id_nadador, ))
+        pruebas = cur.fetchall()
+        print(pruebas)
+    except ConnectionAbortedError:
+        row = None
+    finally:
+        con.close()
+
+    return render_template("view.html", row=row, pruebas=pruebas)
 
 # Route that will SELECT a specific row in the database then load an Edit form
 @app.route("/edit", methods=['POST','GET'])
@@ -124,8 +171,9 @@ def edit():
             id=None
         finally:
             con.close()
-            # Send the specific record of data to edit.html
-            return render_template("edit.html",rows=rows)
+
+        # Send the specific record of data to edit.html
+        return render_template("edit.html",rows=rows)
 
 # Route used to execute the UPDATE statement on a specific record in the database
 @app.route("/editrec", methods=['POST','GET'])
@@ -155,8 +203,8 @@ def editrec():
             con.close()
             # Send the transaction message to result.html
             return render_template('result.html',msg=msg)
-        
-        
+
+
 @app.route("/delete", methods=['POST','GET'])
 def delete():
     """Delete a Nadador from database"""
