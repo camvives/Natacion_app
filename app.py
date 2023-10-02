@@ -85,7 +85,7 @@ def addrec():
 # Route to SELECT all data from the database and display in a table
 @app.route('/list')
 def list_nadadores():
-    """Show list of swimmers and data"""
+    """Show list of swimmers and personal info"""
     # Connect to the SQLite3 datatabase and
     # SELECT all Rows from the Nadadores table.
     con = sqlite3.connect("database.db")
@@ -155,10 +155,11 @@ def editrec():
             con.close()
             # Send the transaction message to result.html
             return render_template('result.html',msg=msg)
-
-# Route used to DELETE a specific record in the database
+        
+        
 @app.route("/delete", methods=['POST','GET'])
 def delete():
+    """Delete a Nadador from database"""
     if request.method == 'POST':
         try:
              # Use the hidden input value of id from the form to get the rowid
@@ -166,18 +167,19 @@ def delete():
             # Connect to the database and DELETE a specific record based on rowid
             with sqlite3.connect('database.db') as con:
                     cur = con.cursor()
-                    cur.execute("DELETE FROM students WHERE rowid="+rowid)
+                    cur.execute("DELETE FROM adadores_pruebas WHERE Id="+rowid)
+                    cur.execute("DELETE FROM nadadores WHERE Id="+rowid)
 
                     con.commit()
                     msg = "Record successfully deleted from the database"
-        except:
+        except ConnectionAbortedError:
             con.rollback()
             msg = "Error in the DELETE"
 
         finally:
             con.close()
-            # Send the transaction message to result.html
-            return render_template('result.html',msg=msg)
+
+    return render_template('result.html',msg=msg)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,8 +1,30 @@
 {% extends "layout.html" %}
 {% block title %}
-List All Students
+Lista Nadadores
 {% endblock %}
 {% block content %}
+<!-- Modal for Delete Confirmation -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Estas seguro de que querés eliminar este nadador? Se van a eliminar sus pruebas a
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <!-- Add a data-id attribute to store the ID of the record to be deleted -->
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <section>
     <div class="container mt-3">
         <h2>Tabla de Nadadores Registrados</h2>
@@ -43,12 +65,12 @@ List All Students
                                 </button>
                             </form>
                             
-                            <form action="{{url_for('delete')}}" method="POST" style="display: inline;">
+                            <form action="{{url_for('delete')}}" method="POST" style="display: inline;" class="delete-form">
                                 <input type="hidden" name="id" value="{{ row['Id'] }}">
-                                <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                <button type="button" class="open-delete-modal" style="background: none; border: none; cursor: pointer;">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                            </form>
+                            </form>                            
                         </td>
                     </tr>
                     {% endfor %}
