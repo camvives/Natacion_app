@@ -4,24 +4,24 @@ Natación APP
 {% endblock %}
 {% block content %}
 <section>
-    <h1 class="title-background mt-2">{{ row["NombreApellido"] }}</h1>
+    <h1 class="title-background mt-2">{{ nadador.nombre_apellido }}</h1>
     
     <div class="container d-flex justify-content-center align-items-center">
         <table>
             <tr>
                 <td style="text-align: center; padding-right: 5vh;">
                     <div style="display: inline-block;">
-                        <h3>{{ row["Sexo"] }}</h3>
+                        <h3>{{ nadador.sexo }}</h3>
                     </div>
                 </td>
                 <td style="text-align: center; padding-right: 5vh;">
                     <div style="display: inline-block;">
-                        <h3>Categoría: {{ row["Categoria"] }}</h3>
+                        <h3>Categoría: {{ nadador.categoria }}</h3>
                     </div>
                 </td>
                 <td style="text-align: center;">
                     <div style="display: inline-block;">
-                        <h3>{{ row["Club"] }}</h3>
+                        <h3>{{ nadador.club }}</h3>
                     </div>
                 </td>
             </tr>
@@ -40,9 +40,9 @@ Natación APP
             <tbody id="myTable">
                 {% for prueba in pruebas %}
                 <tr>
-                    <td>{{ prueba["descripcion"] }}</td>
-                    <td>{{ prueba["TiempoPreInscripcion"] }}</td>
-                    <td>{{ prueba["TiempoCompeticion"] }}</td>
+                    <td>{{ prueba.descripcion }}</td>
+                    <td>{{ prueba.tiempo_preinscripcion }}</td>
+                    <td>{{ prueba.tiempo_competencia }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
