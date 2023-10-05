@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block title %}
+Orden Recreativo
+{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-5">
+        <h2>Orden Recreativo</h2>
+        <div class="table-wrapper-scroll-y mt-3">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Prueba</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                    {% for prueba in pruebas %}
+                    <tr>
+                        <td>{{ prueba['descripcion'] }}</td>
+                        <td>
+                            <form action="{{url_for('view')}}" method="POST" style="display: inline; padding-left: 10px; padding-right: 10px;">
+                                <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
+                                <button class="btn btn-success btn-sm" type="submit">
+                                    Ver
+                                </button>
+                            </form>
+
+                            <form action="{{url_for('edit')}}" method="POST" style="display: inline; padding-right: 10px;">
+                                <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
+                                <button class="btn btn-warning btn-sm" type="submit">
+                                    Generar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class='air air1'></div>
+    <div class='air air2'></div>
+</section>
+{% endblock %}

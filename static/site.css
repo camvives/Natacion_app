@@ -78,3 +78,7 @@
     max-height: 300px; /* Set the maximum height for scrolling */
     overflow-y: auto; /* Enable vertical scrolling */
 }
+
+.dataTables_length {
+  display: none;
+}

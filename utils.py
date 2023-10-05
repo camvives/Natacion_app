@@ -1,7 +1,9 @@
 """Collection of utility functions for common tasks. 
 This simplify common operations and improve code readability"""
 
-def convert_timestamp(mm_values, ss_values, sss_values):
+from math import ceil
+
+def convert_timestamp(mm_values: list, ss_values:list, sss_values:list):
     """Returns a list with timestamps formatted in mm:ss:sss or '99:99:999' 
         if any value is empty."""
 
@@ -15,3 +17,38 @@ def convert_timestamp(mm_values, ss_values, sss_values):
             formatted_times.append(f'{int(minu):02}:{int(sec):02}:{int(sss):03}')
 
     return formatted_times
+
+
+def order_swimmers_comp(nadadores_prueba: list):
+    """Asign a pool number and a lane number for each swimmer in an event"""
+    nadadores_prueba = [list(row) for row in nadadores_prueba]
+    cant_nadadores = len(nadadores_prueba)
+    list_carril = [4,3,5,2,6,1]
+
+    cant_piletas = ceil(cant_nadadores / 6)
+
+    for i in range(cant_piletas):
+        start_index = i * 6
+        end_index = min((i + 1) * 6, cant_nadadores)
+
+        for j, k in zip(range(start_index, end_index), list_carril):
+            nadadores_prueba[j][3] = cant_piletas - i
+            nadadores_prueba[j][4] = k
+
+    # Get the swimmers for the last pool
+    ultima_pileta = [sublist for sublist in nadadores_prueba if sublist[-2] == 1]
+    cant_ult_pileta = len(ultima_pileta)
+
+    if cant_nadadores > 6 and cant_ult_pileta < 6:
+        if cant_ult_pileta < 3:
+            nadadores_prueba[-(cant_ult_pileta + 2)][3] = 1
+        nadadores_prueba[-(cant_ult_pileta + 1)][3] = 1
+
+    ultima_pileta = [sublist for sublist in nadadores_prueba if sublist[-2] == 1]
+    cant_ant = len(nadadores_prueba) - len(ultima_pileta)
+
+    for j, k in zip(range(cant_ant, cant_nadadores), list_carril):
+        nadadores_prueba[j][4] = k
+
+
+    return nadadores_prueba

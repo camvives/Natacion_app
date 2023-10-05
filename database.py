@@ -191,4 +191,84 @@ def delete_nadador(id_nadador):
     except sqlite3.Error as err:
         print("Database error:", err)
         con.rollback()
-        
+
+def get_all_pruebas_grouped():
+    """Gets all the events crossed with category and gender"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT p.IdPrueba, c.Id as IdCategoria, p.descripcion as Prueba,
+                    c.descripcion as Categoria, s.Sexo,
+                    COUNT(n.Id) as NumeroNadadores
+                    FROM Pruebas p
+                    CROSS JOIN Categorias c
+                    CROSS JOIN (SELECT 'Femenino' AS Sexo UNION SELECT 'Masculino') AS s
+                    INNER JOIN Nadadores n ON c.Id = n.IdCategoria AND s.Sexo = n.Sexo
+                    INNER JOIN Nadadores_Pruebas np ON n.Id = np.IdNadador AND np.IdPrueba = p.IdPrueba
+                    GROUP BY p.IdPrueba, c.Id, p.descripcion, c.descripcion, s.Sexo
+                    ORDER BY NumeroNadadores DESC;
+                    """)
+        rows = cur.fetchall()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        rows = []
+    finally:
+        con.close()
+    return rows
+
+def get_nadadores_prueba(id_prueba, id_categoria, sexo):
+    """Get all swimmers for a specific event"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT np.IdNadador, np.IdPrueba, np.TiempoPreInscripcion,
+                        np.Pileta, np.Orden
+                        FROM Nadadores_Pruebas np
+                        INNER JOIN Nadadores n on n.Id = np.IdNadador
+                        WHERE IdPrueba = ? and IdCategoria = ? and Sexo = ?
+                        ORDER BY np.TiempoPreInscripcion
+                    """, (id_prueba, id_categoria, sexo))
+        rows = cur.fetchall()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        rows = []
+    finally:
+        con.close()
+    return rows
+
+def update_nadador_pruebas(nadador_pruebas):
+    """Update pool and order values for nadador_pruebas rows"""
+    try:
+        con = connect_db()
+        for row in nadador_pruebas:
+            con.execute("""UPDATE Nadadores_Pruebas SET Orden = ?, Pileta = ?
+                        WHERE IdNadador = ?""",
+                        (row[-1], row[-2], row[0]))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
+def get_ordered_swimmers(id_prueba, id_categoria, sexo):
+    """Get all sorted swimmers for a specific event"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT n.NombreApellido, np.TiempoPreInscripcion, np.Pileta, np.Orden
+                        FROM Nadadores_Pruebas np
+                        INNER JOIN Nadadores n on n.Id = np.IdNadador
+                        WHERE np.IdPrueba = ? and n.IdCategoria = ? and n.Sexo = ?
+                        ORDER BY np.Pileta DESC
+                    """, (id_prueba, id_categoria, sexo))
+        rows = cur.fetchall()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        rows = []
+    finally:
+        con.close()
+    return rows

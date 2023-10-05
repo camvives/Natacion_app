@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+{% block title %}
+Orden Competitivo
+{% endblock %}
+{% block content %}
+<section>
+    <div class="container">
+        <h2 class="mt-4 mb-2">Orden Competitivo</h2>
+        <table id="example" class="display" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Prueba</th>
+                    <th>Categoria</th>
+                    <th>Sexo</th>
+                    <th>Inscriptos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prueba in pruebas %}
+                <tr>
+                    <td>{{ prueba['Prueba'] }}</td>
+                    <td>{{ prueba['Categoria'] }}</td>
+                    <td>{{ prueba['Sexo'] }}</td>
+                    <td>{{ prueba['NumeroNadadores'] }}</td>
+                    <td>                            
+                        <form action="{{ url_for('viewordercomp', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                            <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
+                            <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
+                            <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
+                            <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                <i class="fas fa-eye" title="Ver"></i>
+                            </button>
+                        </form>
+                        <form action="{{ url_for('ordercomp', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                            <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
+                            <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
+                            <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
+                            <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                <i class="fas fa-flask" title="Generar"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class='air air1'></div>
+    <div class='air air2'></div>
+</section>
+<script>
+    $(document).ready(function () {
+        var table = $('#example').DataTable();
+
+        // Agregar un input de filtro para cada columna excepto la última
+        $('#example thead th').each(function (index) {
+            if (index < $('#example thead th').length - 2) {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Filtrar ' + title + '" />');
+            }
+        });
+
+        // Aplicar el filtro a cada columna excepto la última
+        table.columns().every(function (index) {
+            if (index < table.columns().header().length - 2) {
+                var that = this;
+
+                $('input', this.header()).on('keyup change', function () {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        var maxRows = 6; // Maximum number of rows to display
+        var table = $('#example').DataTable(); // Initialize DataTable
+
+        // Show only the first 'maxRows' rows
+        table.page.len(maxRows).draw();
+    });
+</script>
+{% endblock %}

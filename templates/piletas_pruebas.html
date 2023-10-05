@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}
+Orden Competitivo
+{% endblock %}
+{% block content %}
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+            <div class="col-8">
+                <table class="table table-bordered text-center table-striped table-sm">
+                    {% for pileta in piletas %}
+                        <tr>
+                            <th colspan="3" style="background-color: #ccc;">
+                                Pileta {{ loop.index }}
+                            </th>
+                        </tr>
+                        {% for i in range(1, 7) %}
+                            <tr>
+                                <td>{{ i }}</td>
+                                {% for nadador in pileta %}
+                                    {% if nadador['Orden'] == i %}
+                                        <td>
+                                            {{ nadador['NombreApellido'] }}
+                                        </td>
+                                        <td>
+                                            {{ nadador['TiempoPreInscripcion'] }}
+                                        </td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}         
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+{% endblock %}
+

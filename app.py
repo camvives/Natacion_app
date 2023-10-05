@@ -1,8 +1,9 @@
 """Flask routes to run application"""
 import sqlite3
+from collections import defaultdict
 from flask import Flask, render_template, request, redirect, url_for
 from models import Nadador, NadadorPrueba
-from utils import convert_timestamp
+from utils import convert_timestamp, order_swimmers_comp
 from database import (
     add_nadador,
     get_categorias,
@@ -13,7 +14,11 @@ from database import (
     get_nadador_pruebas,
     update_nadador_info,
     delete_and_insert_nadador_pruebas,
-    delete_nadador
+    delete_nadador,
+    get_all_pruebas_grouped,
+    get_nadadores_prueba,
+    update_nadador_pruebas,
+    get_ordered_swimmers
 )
 app = Flask(__name__)
 
@@ -120,6 +125,51 @@ def delete():
     except sqlite3.Error as err:
         print("Error:", err)
     return redirect(url_for('list_nadadores'))
+
+@app.route('/ordercomp')
+def orden_competitivo():
+    """Shows list of events to sort or view (competitive)"""
+    pruebas = get_all_pruebas_grouped()
+
+    return render_template("competitivo.html", pruebas=pruebas)
+
+
+@app.route('/ordercomp/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
+def ordercomp(id_prueba, id_categoria, sexo):
+    """Asign a pool number and a lane number for each swimmer in an event"""
+    nadadores_prueba = list(get_nadadores_prueba(id_prueba, id_categoria, sexo))
+    nadadores_ordenados = order_swimmers_comp(nadadores_prueba)
+
+    update_nadador_pruebas(nadadores_ordenados)
+
+    return viewordercomp(id_prueba, id_categoria, sexo)
+
+@app.route('/viewordercomp/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
+def viewordercomp(id_prueba, id_categoria, sexo):
+    """Show list of pools and lanes for an event"""
+
+    nadadores_prueba = list(get_ordered_swimmers(id_prueba, id_categoria, sexo))
+
+    # Create a defaultdict with the default value as a list
+    grouped_sublists = defaultdict(list)
+
+    for sublist in nadadores_prueba:
+        key = sublist[-2]
+        grouped_sublists[key].append(sublist)
+
+    result = list(grouped_sublists.values())
+
+    piletas = []
+    for pileta in result:
+        pileta.sort(key=get_orden)
+        piletas.append(pileta)
+
+    piletas.reverse()
+    return render_template("piletas_pruebas.html", piletas=piletas)
+
+def get_orden(row):
+    """Returns orden of swimmer"""
+    return row['Orden']
 
 if __name__ == "__main__":
     app.run(debug=True)
