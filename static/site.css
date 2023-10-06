@@ -82,3 +82,7 @@
 .dataTables_length {
   display: none;
 }
+
+.highlighted-row {
+  background-color: yellow; 
+}

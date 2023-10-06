@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block title %}
-Orden Competitivo
+Resultados
 {% endblock %}
 {% block content %}
 <section>
     <div class="container">
-        <h2 class="mt-4 mb-2">Orden Competitivo</h2>
+        <h2 class="mt-4 mb-2">Resultados</h2>
         <table id="example" class="display" style="width:100%;">
             <thead>
                 <tr>
@@ -24,28 +24,12 @@ Orden Competitivo
                     <td>{{ prueba['Sexo'] }}</td>
                     <td>{{ prueba['NumeroNadadores'] }}</td>
                     <td>                            
-                        <form action="{{ url_for('viewordercomp', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                        <form action="{{ url_for('result_event', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
                             <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
                             <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
                             <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
                             <button type="submit" style="background: none; border: none; cursor: pointer;">
-                                <i class="fas fa-eye" title="Ver"></i>
-                            </button>
-                        </form>
-                        <form action="{{ url_for('ordercomp', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
-                            <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
-                            <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
-                            <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
-                            <button type="submit" style="background: none; border: none; cursor: pointer;">
-                                <i class="fas fa-flask" title="Generar"></i>
-                            </button>
-                        </form>
-                        <form action="{{ url_for('cargatime', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
-                            <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
-                            <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
-                            <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
-                            <button type="submit" style="background: none; border: none; cursor: pointer;">
-                                <i class="fa fa-clock" title="Cargar tiempos"></i>
+                                <i class="fas fa-trophy" title="Ver ranking"></i>
                             </button>
                         </form>
                     </td>

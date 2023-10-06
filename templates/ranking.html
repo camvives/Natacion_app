@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}
+Resultados
+{% endblock %}
+{% block content %}
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+            <h2 class="mb-3">{{ prueba.descripcion }} / {{ categoria.descripcion }} / {{ sexo }}</h2>
+            <div class="col-8">
+                <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombre y Apellido</th>
+                        <th scope="col">Club</th>
+                        <th scope="col">Tiempo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for nadador in nadadores %}
+                        <tr {% if loop.index <= 3 %}class="highlighted-row"{% endif %}>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ nadador['NombreApellido'] }}</td>
+                        <td>{{ nadador['Club'] }}</td>
+                        <td>{{ nadador['TiempoCompeticion'] }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+{% endblock %}

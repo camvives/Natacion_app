@@ -5,7 +5,8 @@ from models import Nadador, NadadorPrueba
 from utils import (
     convert_timestamp, 
     order_swimmers_comp, 
-    order_pools
+    order_pools, 
+    convert_one_timestamp
 )
 from database import (
     add_nadador,
@@ -26,7 +27,10 @@ from database import (
     get_one_categoria,
     get_nadadores_prueba_rec,
     update_nadador_pruebas_rec,
-    get_ordered_swimmers_rec 
+    get_ordered_swimmers_rec,
+    insert_comp_time,
+    del_comp_time,
+    get_ranked_swimmers
 )
 app = Flask(__name__)
 
@@ -195,6 +199,64 @@ def vieworderrec(id_prueba, id_categoria, sexo):
                            prueba=prueba, categoria=categoria, sexo=sexo,
                            tipo='Recreativo')
 
+
+@app.route('/cargatime/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
+def cargatime(id_prueba, id_categoria, sexo):
+    """Show list of pools and lanes for an event and let the user upload times"""
+
+    nadadores_prueba = list(get_ordered_swimmers(id_prueba, id_categoria, sexo))
+    piletas = order_pools(nadadores_prueba)
+    prueba = get_one_prueba(id_prueba)
+    categoria = get_one_categoria(id_categoria)
+
+    return render_template("piletas_pruebas.html", piletas=piletas,
+                           prueba=prueba, categoria=categoria, sexo=sexo,
+                           tipo='Carga Tiempos')
+
+@app.route('/insertNadTime', methods=['POST'])
+def insert_nad_time():
+    """Insert the competitive time for a swimmer in an event"""
+    id_prueba = request.form.get('prueba')
+    id_categoria = request.form.get('categoria')
+    sexo = request.form.get('sexo')
+    id_nadador = request.form.get('nadador')
+    tiempo_mm = request.form.get('tiempo_mm')
+    tiempo_ss = request.form.get('tiempo_ss')
+    tiempo_sss = request.form.get('tiempo_sss')
+    tiempo = convert_one_timestamp(tiempo_mm, tiempo_ss, tiempo_sss)
+
+    insert_comp_time(id_prueba, id_nadador, tiempo)
+    return cargatime(id_prueba, id_categoria, sexo)
+
+@app.route('/delNadTime', methods=['POST'])
+def del_nad_time():
+    """Insert the competitive time for a swimmer in an event"""
+    id_prueba = request.form.get('prueba')
+    id_categoria = request.form.get('categoria')
+    sexo = request.form.get('sexo')
+    id_nadador = request.form.get('nadador')
+
+    print(id_prueba, id_nadador)
+    del_comp_time(id_prueba, id_nadador)
+    return cargatime(id_prueba, id_categoria, sexo)
+
+@app.route('/results', methods=['GET'])
+def results():
+    """Show list of events to access results of competition"""
+    pruebas = get_all_pruebas_grouped()
+
+    return render_template("resultados.html", pruebas=pruebas)
+
+@app.route('/results/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
+def result_event(id_prueba, id_categoria, sexo):
+    """Show swimmers rank based on event time"""
+
+    nadadores_ranked = get_ranked_swimmers(id_prueba, id_categoria, sexo)
+    prueba = get_one_prueba(id_prueba)
+    categoria = get_one_categoria(id_categoria)
+
+    return render_template("ranking.html", nadadores=nadadores_ranked,
+                           prueba=prueba, categoria=categoria, sexo=sexo)
 
 if __name__ == "__main__":
     app.run(debug=True)

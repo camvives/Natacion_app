@@ -10,7 +10,7 @@ Orden {{tipo}}
                 <table class="table table-bordered text-center table-striped table-sm">
                     {% for pileta in piletas %}
                         <tr>
-                            <th colspan="3" style="background-color: #ccc;">
+                            <th colspan="7" style="background-color: #ccc;">
                                 Pileta {{ loop.index }}
                             </th>
                         </tr>
@@ -22,15 +22,48 @@ Orden {{tipo}}
                                         <td>
                                             {{ nadador['NombreApellido'] }}
                                         </td>
-                                        {% if tipo == 'Competitivo' %}
+                                        {% if tipo != 'Recreativo' %}
                                         <td>
                                             {{ nadador['TiempoPreInscripcion'] }}
                                         </td>
                                         {% endif %}
+                                        {% if tipo == 'Carga Tiempos' %}
+                                            {% if nadador['TiempoCompeticion'] == None %}
+                                                <td>
+                                                    <form action="{{ url_for('insert_nad_time') }}" method="POST">
+                                                        <input type="hidden" name="prueba" value="{{ prueba.id_prueba }}">
+                                                        <input type="hidden" name="categoria" value="{{ categoria.id_categoria }}">
+                                                        <input type="hidden" name="sexo" value="{{ sexo }}">
+                                                        <input type="hidden" name="nadador" value="{{ nadador['IdNadador'] }}">
+                                                        <input type="text" name="tiempo_mm" placeholder="mm" style="width: 7vh;" required>
+                                                        <input type="text" name="tiempo_ss" placeholder="ss" style="width: 7vh;" required>
+                                                        <input type="text" name="tiempo_sss" placeholder="sss" style="width: 7vh;" required>
+                                                        <button type="submit" class="btn btn-success btn-sm">
+                                                            <i class="fa fa-check" title="Guardar tiempo"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            {% else %}
+                                                <td>
+                                                    {{ nadador['TiempoCompeticion'] }}
+                                                </td>
+                                                <td>
+                                                    <form action="{{ url_for('del_nad_time') }}" method="POST">
+                                                        <input type="hidden" name="prueba" value="{{ prueba.id_prueba }}">
+                                                        <input type="hidden" name="categoria" value="{{ categoria.id_categoria }}">
+                                                        <input type="hidden" name="sexo" value="{{ sexo }}">
+                                                        <input type="hidden" name="nadador" value="{{ nadador['IdNadador'] }}">
+                                                        <button type="submit" class="btn btn-danger btn-sm">
+                                                            <i class="fa fa-times" title="Eliminar tiempo"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            {% endif %}
+                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}
                             </tr>
-                        {% endfor %}         
+                        {% endfor %}
                     {% endfor %}
                 </table>
             </div>
@@ -39,4 +72,3 @@ Orden {{tipo}}
     <br>
     <br>
 {% endblock %}
-

@@ -19,6 +19,12 @@ def convert_timestamp(mm_values: list, ss_values:list, sss_values:list):
 
     return formatted_times
 
+def convert_one_timestamp(minu:str, sec:str, sss:str):
+    """Converts values into timestamp mm:ss:sss"""
+
+    timestamp = f'{int(minu):02}:{int(sec):02}:{int(sss):03}'
+
+    return timestamp
 
 def order_swimmers_comp(nadadores_prueba: list):
     """Asign a pool number and a lane number for each swimmer in an event"""

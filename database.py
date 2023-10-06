@@ -295,7 +295,8 @@ def get_ordered_swimmers(id_prueba, id_categoria, sexo):
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("""SELECT n.NombreApellido, np.TiempoPreInscripcion, np.Pileta, np.Orden
+        cur.execute("""SELECT np.IdNadador, np.TiempoCompeticion, n.NombreApellido, 
+                        np.TiempoPreInscripcion, np.Pileta, np.Orden
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n on n.Id = np.IdNadador
                         WHERE np.IdPrueba = ? and n.IdCategoria = ? and n.Sexo = ?
@@ -328,7 +329,6 @@ def get_ordered_swimmers_rec(id_prueba, id_categoria, sexo):
     finally:
         con.close()
     return rows
-
 
 def get_one_prueba(id_prueba):
     """Get one event by id"""
@@ -373,3 +373,55 @@ def get_one_categoria(id_categoria):
     finally:
         con.close()
     return categoria
+
+def insert_comp_time(id_prueba, id_nadador, tiempo):
+    """Insert the competitive time for a swimmer in an event"""
+    try:
+        con = connect_db()
+        con.execute("""UPDATE Nadadores_Pruebas SET TiempoCompeticion = ?
+                        WHERE IdNadador = ? and IdPrueba = ?""",
+                        (tiempo, id_nadador, id_prueba))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
+
+def del_comp_time(id_prueba, id_nadador):
+    """Delete the competitive time for a swimmer in an event"""
+    try:
+        con = connect_db()
+        con.execute("""UPDATE Nadadores_Pruebas SET TiempoCompeticion = NULL
+                        WHERE IdNadador = ? and IdPrueba = ?""",
+                        (id_nadador, id_prueba))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
+def get_ranked_swimmers(id_prueba, id_categoria, sexo):
+    """Get all ranked swimmers for a specific event based on cometition time"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT n.NombreApellido, np.TiempoCompeticion, c.descripcion as Club
+                        FROM Nadadores_Pruebas np
+                        INNER JOIN Nadadores n on n.Id = np.IdNadador
+                        INNER JOIN Clubes c on n.IdClub = c.Id
+                        WHERE np.IdPrueba = ? and n.IdCategoria = ? and 
+                        n.Sexo = ? and TiempoCompeticion is not null
+                        ORDER BY np.TiempoCompeticion ASC
+
+                    """, (id_prueba, id_categoria, sexo))
+        rows = cur.fetchall()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        rows = []
+    finally:
+        con.close()
+    return rows
