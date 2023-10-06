@@ -60,7 +60,8 @@ def get_orden(row):
 
 def order_pools(nadadores_prueba: list):
     """Order swimmers into diferents pools for an event"""
-        # Create a defaultdict with the default value as a list
+        
+    # Create a defaultdict with the default value as a list
     grouped_sublists = defaultdict(list)
 
     for sublist in nadadores_prueba:
@@ -77,3 +78,8 @@ def order_pools(nadadores_prueba: list):
     piletas.reverse()
 
     return piletas
+
+
+def order_swimmers_rec(nadadores_pruebas: list):
+    """Asign randomly a pool number and a lane number for each swimmer in an event"""
+    return nadadores_pruebas

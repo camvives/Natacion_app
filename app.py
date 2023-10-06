@@ -2,7 +2,11 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
 from models import Nadador, NadadorPrueba
-from utils import convert_timestamp, order_swimmers_comp, order_pools
+from utils import (
+    convert_timestamp, 
+    order_swimmers_comp, 
+    order_pools
+)
 from database import (
     add_nadador,
     get_categorias,
@@ -19,7 +23,10 @@ from database import (
     update_nadador_pruebas,
     get_ordered_swimmers,
     get_one_prueba,
-    get_one_categoria
+    get_one_categoria,
+    get_nadadores_prueba_rec,
+    update_nadador_pruebas_rec,
+    get_ordered_swimmers_rec 
 )
 app = Flask(__name__)
 
@@ -134,6 +141,13 @@ def orden_competitivo():
 
     return render_template("competitivo.html", pruebas=pruebas)
 
+@app.route('/orderrec')
+def orden_recreativo():
+    """Shows list of events to sort or view (recreative)"""
+    pruebas = get_all_pruebas_grouped()
+
+    return render_template("recreativo.html", pruebas=pruebas)
+
 
 @app.route('/ordercomp/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
 def ordercomp(id_prueba, id_categoria, sexo):
@@ -145,6 +159,16 @@ def ordercomp(id_prueba, id_categoria, sexo):
 
     return viewordercomp(id_prueba, id_categoria, sexo)
 
+@app.route('/orderrec/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
+def orderrec(id_prueba, id_categoria, sexo):
+    """Asign randomly a pool number and a lane number for each swimmer in an event"""
+    nadadores_prueba = list(get_nadadores_prueba_rec(id_prueba, id_categoria, sexo))
+    nadadores_ordenados = order_swimmers_comp(nadadores_prueba)
+
+    update_nadador_pruebas_rec(nadadores_ordenados)
+
+    return vieworderrec(id_prueba, id_categoria, sexo)
+
 @app.route('/viewordercomp/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
 def viewordercomp(id_prueba, id_categoria, sexo):
     """Show list of pools and lanes for an event"""
@@ -154,9 +178,22 @@ def viewordercomp(id_prueba, id_categoria, sexo):
     prueba = get_one_prueba(id_prueba)
     categoria = get_one_categoria(id_categoria)
 
-    return render_template("piletas_pruebas.html", piletas=piletas, 
-                           prueba=prueba, categoria=categoria, sexo=sexo)
+    return render_template("piletas_pruebas.html", piletas=piletas,
+                           prueba=prueba, categoria=categoria, sexo=sexo, 
+                           tipo='Competitivo')
 
+@app.route('/vieworderrec/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
+def vieworderrec(id_prueba, id_categoria, sexo):
+    """Show list of pools and lanes for an event"""
+
+    nadadores_prueba = list(get_ordered_swimmers_rec(id_prueba, id_categoria, sexo))
+    piletas = order_pools(nadadores_prueba)
+    prueba = get_one_prueba(id_prueba)
+    categoria = get_one_categoria(id_categoria)
+
+    return render_template("piletas_pruebas.html", piletas=piletas,
+                           prueba=prueba, categoria=categoria, sexo=sexo,
+                           tipo='Recreativo')
 
 
 if __name__ == "__main__":

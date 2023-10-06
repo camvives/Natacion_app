@@ -238,12 +238,48 @@ def get_nadadores_prueba(id_prueba, id_categoria, sexo):
         con.close()
     return rows
 
+def get_nadadores_prueba_rec(id_prueba, id_categoria, sexo):
+    """Get all swimmers for a specific event with random order"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT np.IdNadador, np.IdPrueba, np.TiempoPreInscripcion,
+                        np.PiletaRec, np.OrdenRec
+                        FROM Nadadores_Pruebas np
+                        INNER JOIN Nadadores n on n.Id = np.IdNadador
+                        WHERE IdPrueba = ? and IdCategoria = ? and Sexo = ?
+                        ORDER BY RANDOM()
+                    """, (id_prueba, id_categoria, sexo))
+        rows = cur.fetchall()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        rows = []
+    finally:
+        con.close()
+    return rows
+
 def update_nadador_pruebas(nadador_pruebas):
     """Update pool and order values for nadador_pruebas rows"""
     try:
         con = connect_db()
         for row in nadador_pruebas:
             con.execute("""UPDATE Nadadores_Pruebas SET Orden = ?, Pileta = ?
+                        WHERE IdNadador = ?""",
+                        (row[-1], row[-2], row[0]))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
+def update_nadador_pruebas_rec(nadador_pruebas):
+    """Update pool and order values for nadador_pruebas rows"""
+    try:
+        con = connect_db()
+        for row in nadador_pruebas:
+            con.execute("""UPDATE Nadadores_Pruebas SET OrdenRec = ?, PiletaRec = ?
                         WHERE IdNadador = ?""",
                         (row[-1], row[-2], row[0]))
         con.commit()
@@ -272,6 +308,27 @@ def get_ordered_swimmers(id_prueba, id_categoria, sexo):
     finally:
         con.close()
     return rows
+
+def get_ordered_swimmers_rec(id_prueba, id_categoria, sexo):
+    """Get all sorted swimmers for a specific event"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT n.NombreApellido, np.TiempoPreInscripcion, np.PiletaRec, np.OrdenRec as Orden
+                        FROM Nadadores_Pruebas np
+                        INNER JOIN Nadadores n on n.Id = np.IdNadador
+                        WHERE np.IdPrueba = ? and n.IdCategoria = ? and n.Sexo = ?
+                        ORDER BY np.PiletaRec DESC
+                    """, (id_prueba, id_categoria, sexo))
+        rows = cur.fetchall()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        rows = []
+    finally:
+        con.close()
+    return rows
+
 
 def get_one_prueba(id_prueba):
     """Get one event by id"""

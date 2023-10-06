@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block title %}
-Orden Competitivo
+Orden {{tipo}}
 {% endblock %}
 {% block content %}
     <div class="container mt-3">
         <div class="row justify-content-center">
-            <h2 class="mb-3">{{ prueba.descripcion }} / {{ categoria.descripcion }} / {{ sexo }}</h2>
+            <h2 class="mb-3">{{ prueba.descripcion }} / {{ categoria.descripcion }} / {{ sexo }} [{{ tipo }}]</h2>
             <div class="col-8">
                 <table class="table table-bordered text-center table-striped table-sm">
                     {% for pileta in piletas %}
@@ -22,9 +22,11 @@ Orden Competitivo
                                         <td>
                                             {{ nadador['NombreApellido'] }}
                                         </td>
+                                        {% if tipo == 'Competitivo' %}
                                         <td>
                                             {{ nadador['TiempoPreInscripcion'] }}
                                         </td>
+                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}
                             </tr>

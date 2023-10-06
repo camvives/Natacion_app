@@ -4,43 +4,86 @@ Orden Recreativo
 {% endblock %}
 {% block content %}
 <section>
-    <div class="container mt-5">
-        <h2>Orden Recreativo</h2>
-        <div class="table-wrapper-scroll-y mt-3">
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Prueba</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="myTable">
-                    {% for prueba in pruebas %}
-                    <tr>
-                        <td>{{ prueba['descripcion'] }}</td>
-                        <td>
-                            <form action="{{url_for('view')}}" method="POST" style="display: inline; padding-left: 10px; padding-right: 10px;">
-                                <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
-                                <button class="btn btn-success btn-sm" type="submit">
-                                    Ver
-                                </button>
-                            </form>
-
-                            <form action="{{url_for('edit')}}" method="POST" style="display: inline; padding-right: 10px;">
-                                <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
-                                <button class="btn btn-warning btn-sm" type="submit">
-                                    Generar
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="container">
+        <h2 class="mt-4 mb-2">Orden Recreativo</h2>
+        <table id="example" class="display" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Prueba</th>
+                    <th>Categoria</th>
+                    <th>Sexo</th>
+                    <th>Inscriptos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prueba in pruebas %}
+                <tr>
+                    <td>{{ prueba['Prueba'] }}</td>
+                    <td>{{ prueba['Categoria'] }}</td>
+                    <td>{{ prueba['Sexo'] }}</td>
+                    <td>{{ prueba['NumeroNadadores'] }}</td>
+                    <td>                            
+                        <form action="{{ url_for('vieworderrec', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                            <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
+                            <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
+                            <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
+                            <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                <i class="fas fa-eye" title="Ver"></i>
+                            </button>
+                        </form>
+                        <form action="{{ url_for('orderrec', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                            <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
+                            <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
+                            <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
+                            <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                <i class="fas fa-flask" title="Generar"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     <div class='air air1'></div>
     <div class='air air2'></div>
 </section>
+<script>
+    $(document).ready(function () {
+        var table = $('#example').DataTable();
+
+        // Agregar un input de filtro para cada columna excepto la última
+        $('#example thead th').each(function (index) {
+            if (index < $('#example thead th').length - 2) {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Filtrar ' + title + '" />');
+            }
+        });
+
+        // Aplicar el filtro a cada columna excepto la última
+        table.columns().every(function (index) {
+            if (index < table.columns().header().length - 2) {
+                var that = this;
+
+                $('input', this.header()).on('keyup change', function () {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        var maxRows = 6; // Maximum number of rows to display
+        var table = $('#example').DataTable(); // Initialize DataTable
+
+        // Show only the first 'maxRows' rows
+        table.page.len(maxRows).draw();
+    });
+</script>
 {% endblock %}
