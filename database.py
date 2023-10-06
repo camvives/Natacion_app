@@ -1,7 +1,7 @@
 """Functions to operate database"""
 import sqlite3
 import datetime
-from models import Nadador, NadadorPrueba
+from models import Nadador, NadadorPrueba, Prueba, Categoria
 
 def connect_db():
     """Returns conection to database"""
@@ -272,3 +272,47 @@ def get_ordered_swimmers(id_prueba, id_categoria, sexo):
     finally:
         con.close()
     return rows
+
+def get_one_prueba(id_prueba):
+    """Get one event by id"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT *
+                        FROM Pruebas
+                        WHERE IdPrueba = ?""", (id_prueba, ))
+        row = cur.fetchone()
+        if row:
+            prueba = Prueba(row['Descripcion'])
+            prueba.id_prueba = row['IdPrueba']
+        else:
+            prueba = None
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        prueba = None
+    finally:
+        con.close()
+    return prueba
+
+def get_one_categoria(id_categoria):
+    """Get one category by id"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT *
+                        FROM Categorias
+                        WHERE Id = ?""", (id_categoria, ))
+        row = cur.fetchone()
+        if row:
+            categoria = Categoria(row['Descripcion'])
+            categoria.id_categoria = row['Id']
+        else:
+            categoria = None
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        categoria = None
+    finally:
+        con.close()
+    return categoria

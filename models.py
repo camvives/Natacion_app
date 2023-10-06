@@ -5,6 +5,7 @@ class Nadador:
     """Represents a swimmer.
 
     Attributes:
+        id_nadador (int):  The swimmer's identifier.
         nombre_apellido (str): The swimmer's full name.
         sexo (str): The swimmer's gender.
         id_categoria (int): The swimmer's category identifier.
@@ -36,3 +37,25 @@ class NadadorPrueba:
         self.fecha = datetime.date.today().strftime("%Y-%m-%d")
         self.tiempo_preinscripcion = tiempo_preinscripcion
         self.tiempo_competencia = None
+
+class Prueba:
+    """Represents an event.
+
+    Attributes:
+        id_prueba (int): The envent's identifier.
+        descripcion (str): The event's description.
+    """
+    def __init__(self, descripcion):
+        self.id_prueba = None
+        self.descripcion = descripcion
+
+class Categoria:
+    """Represents a category.
+
+    Attributes:
+        id_categoria (int): The category's identifier.
+        descripcion (str): The category's description.
+    """
+    def __init__(self, descripcion):
+        self.id_categoria = None
+        self.descripcion = descripcion

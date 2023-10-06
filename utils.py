@@ -2,6 +2,7 @@
 This simplify common operations and improve code readability"""
 
 from math import ceil
+from collections import defaultdict
 
 def convert_timestamp(mm_values: list, ss_values:list, sss_values:list):
     """Returns a list with timestamps formatted in mm:ss:sss or '99:99:999' 
@@ -52,3 +53,27 @@ def order_swimmers_comp(nadadores_prueba: list):
 
 
     return nadadores_prueba
+
+def get_orden(row):
+    """Returns orden of swimmer"""
+    return row['Orden']
+
+def order_pools(nadadores_prueba: list):
+    """Order swimmers into diferents pools for an event"""
+        # Create a defaultdict with the default value as a list
+    grouped_sublists = defaultdict(list)
+
+    for sublist in nadadores_prueba:
+        key = sublist[-2]
+        grouped_sublists[key].append(sublist)
+
+    result = list(grouped_sublists.values())
+
+    piletas = []
+    for pileta in result:
+        pileta.sort(key=get_orden)
+        piletas.append(pileta)
+
+    piletas.reverse()
+
+    return piletas

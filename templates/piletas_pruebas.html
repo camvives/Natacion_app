@@ -5,6 +5,7 @@ Orden Competitivo
 {% block content %}
     <div class="container mt-3">
         <div class="row justify-content-center">
+            <h2 class="mb-3">{{ prueba.descripcion }} / {{ categoria.descripcion }} / {{ sexo }}</h2>
             <div class="col-8">
                 <table class="table table-bordered text-center table-striped table-sm">
                     {% for pileta in piletas %}
