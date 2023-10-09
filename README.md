@@ -9,6 +9,8 @@ A su vez, en cada uno de estos eventos se encontrarán registrados una cantidad 
 
 <img src="image.png" alt="pool" height="200px" width="auto" />
 
+Además se incluye un ordenamiento recreativo que permite ordenar a los nadadores de un evento de forma aleatoria, sin tener en cuenta su tiempo de pre-inscripción. En este modo no existe la carga de resultados, ya que no forman parte de los eventos competitivos. 
+
 ## Funcionalidades
 
 - Alta, baja, modificación y consulta de Nadadores
