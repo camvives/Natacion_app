@@ -295,7 +295,7 @@ def get_ordered_swimmers(id_prueba, id_categoria, sexo):
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("""SELECT np.IdNadador, np.TiempoCompeticion, n.NombreApellido, 
+        cur.execute("""SELECT np.IdNadador, np.TiempoCompeticion, n.NombreApellido,
                         np.TiempoPreInscripcion, np.Pileta, np.Orden
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n on n.Id = np.IdNadador
@@ -316,7 +316,8 @@ def get_ordered_swimmers_rec(id_prueba, id_categoria, sexo):
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("""SELECT n.NombreApellido, np.TiempoPreInscripcion, np.PiletaRec, np.OrdenRec as Orden
+        cur.execute("""SELECT n.NombreApellido, np.TiempoPreInscripcion,
+                        np.PiletaRec, np.OrdenRec as Orden
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n on n.Id = np.IdNadador
                         WHERE np.IdPrueba = ? and n.IdCategoria = ? and n.Sexo = ?
@@ -388,7 +389,6 @@ def insert_comp_time(id_prueba, id_nadador, tiempo):
     finally:
         con.close()
 
-
 def del_comp_time(id_prueba, id_nadador):
     """Delete the competitive time for a swimmer in an event"""
     try:
@@ -411,12 +411,15 @@ def get_ranked_swimmers(id_prueba, id_categoria, sexo):
         cur = con.cursor()
         cur.execute("""SELECT n.NombreApellido, np.TiempoCompeticion, c.descripcion as Club
                         FROM Nadadores_Pruebas np
-                        INNER JOIN Nadadores n on n.Id = np.IdNadador
-                        INNER JOIN Clubes c on n.IdClub = c.Id
-                        WHERE np.IdPrueba = ? and n.IdCategoria = ? and 
-                        n.Sexo = ? and TiempoCompeticion is not null
-                        ORDER BY np.TiempoCompeticion ASC
-
+                        INNER JOIN Nadadores n ON n.Id = np.IdNadador
+                        INNER JOIN Clubes c ON n.IdClub = c.Id
+                        WHERE np.IdPrueba = ? AND n.IdCategoria = ? AND n.Sexo = ?
+                        ORDER BY
+                        CASE
+                            WHEN np.TiempoCompeticion IS NULL THEN 1
+                            ELSE 0
+                        END,
+                        np.TiempoCompeticion ASC;
                     """, (id_prueba, id_categoria, sexo))
         rows = cur.fetchall()
     except sqlite3.Error as err:

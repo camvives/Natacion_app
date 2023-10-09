@@ -46,7 +46,7 @@ def order_swimmers_comp(nadadores_prueba: list):
     ultima_pileta = [sublist for sublist in nadadores_prueba if sublist[-2] == 1]
     cant_ult_pileta = len(ultima_pileta)
 
-    if cant_nadadores > 6 and cant_ult_pileta < 6:
+    if cant_nadadores > 6 and cant_ult_pileta < 5:
         if cant_ult_pileta < 3:
             nadadores_prueba[-(cant_ult_pileta + 2)][3] = 1
         nadadores_prueba[-(cant_ult_pileta + 1)][3] = 1
@@ -66,7 +66,7 @@ def get_orden(row):
 
 def order_pools(nadadores_prueba: list):
     """Order swimmers into diferents pools for an event"""
-        
+
     # Create a defaultdict with the default value as a list
     grouped_sublists = defaultdict(list)
 

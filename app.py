@@ -3,9 +3,9 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
 from models import Nadador, NadadorPrueba
 from utils import (
-    convert_timestamp, 
-    order_swimmers_comp, 
-    order_pools, 
+    convert_timestamp,
+    order_swimmers_comp,
+    order_pools,
     convert_one_timestamp
 )
 from database import (
@@ -84,7 +84,6 @@ def list_nadadores():
 def view():
     """Shows the personal information of the swimmer and the events in which he/she will compete"""
     id_nadador = request.form.get('id')
-    print(id_nadador)
     nadador = get_nadador_info(id_nadador)
     pruebas = get_nadador_pruebas(id_nadador)
     return render_template("view.html", nadador=nadador, pruebas=pruebas)
@@ -183,7 +182,7 @@ def viewordercomp(id_prueba, id_categoria, sexo):
     categoria = get_one_categoria(id_categoria)
 
     return render_template("piletas_pruebas.html", piletas=piletas,
-                           prueba=prueba, categoria=categoria, sexo=sexo, 
+                           prueba=prueba, categoria=categoria, sexo=sexo,
                            tipo='Competitivo')
 
 @app.route('/vieworderrec/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])

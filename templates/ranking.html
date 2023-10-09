@@ -5,8 +5,15 @@ Resultados
 {% block content %}
     <div class="container mt-3">
         <div class="row justify-content-center">
-            <h2 class="mb-3">{{ prueba.descripcion }} / {{ categoria.descripcion }} / {{ sexo }}</h2>
-            <div class="col-8">
+          <h2 class="mb-2">
+            Resultados:
+            <span class="bubble">{{ prueba.descripcion }}</span>
+            ~
+            <span class="bubble">Categoría: {{ categoria.descripcion }}</span>
+            ~
+            <span class="bubble">{{ sexo }}</span>
+        </h2>
+            <div class="col-8 mt-4">
                 <table class="table table-striped">
                     <thead>
                       <tr>
