@@ -428,3 +428,52 @@ def get_ranked_swimmers(id_prueba, id_categoria, sexo):
     finally:
         con.close()
     return rows
+
+def get_pruebas_info():
+    """Gets all events information"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT * FROM pruebas""")
+        rows = cur.fetchall()
+        pruebas_list = []
+        for row in rows:
+            prueba = Prueba(row['descripcion'])
+            prueba.id_prueba = row["IdPrueba"]
+            pruebas_list.append(prueba)
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        pruebas_list = []
+    finally:
+        con.close()
+    return pruebas_list
+
+
+def update_prueba(prueba):
+    """Update event info"""
+    try:
+        con = connect_db()
+        con.execute("""UPDATE Pruebas SET descripcion = ?
+                        WHERE IdPrueba = ?""",
+                        (prueba.descripcion, prueba.id_prueba))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
+def del_prueba(id_prueba):
+    """Delete event"""
+    try:
+        con = connect_db()
+        con.execute("""DELETE FROM Pruebas
+                        WHERE IdPrueba = ?""",
+                        (id_prueba,))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()

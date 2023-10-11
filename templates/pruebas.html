@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+{% block title %}
+Lista Pruebas
+{% endblock %}
+{% block content %}
+<section>
+    <div class="container mt-3">
+        <h2 class="title-background">PRUEBAS REGISTRADAS</h2>
+        <div class="d-grid gap-2 col-4 mx-auto">
+            <button type="button" class="btn btn-success mb-3">Añadir Prueba</button>
+        </div>
+        <input class="form-control" id="myInput" type="text" placeholder="Buscar...">
+        <!-- Wrap the table in a div with a class for scrolling -->
+        <div class="table-wrapper-scroll-y mt-4">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Descripcion</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                    {% for prueba in rows %}
+                    <tr>
+                        <td>
+                            <span class="description">{{ prueba.descripcion }}</span>
+                            <input type="text" class="edit-input" style="display: none;" value="{{ prueba.descripcion }}">
+                        </td>
+                        <td>
+                            <button class="edit-button" style="background: none; border: none; cursor: pointer;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+
+                            <form action="{{ url_for('edit_prueba') }}" method="POST" style="display: none;" class="edit-form" id="editForm">
+                                <input type="hidden" name="id_edit" value="{{ prueba.id_prueba }}">
+                                <input type="text" name="edited_description" class="edited-description" style="display: none;">
+                                <button type="submit" class="ok-button" style="background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button type="button" class="cancel-button" style="display: none; background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </form>
+
+                            <form action="{{ url_for('delete_prueba') }}" method="POST" style="display: inline;" class="delete-form" id="deleteForm">
+                                <input type="hidden" name="id_del" value="{{ prueba.id_prueba }}">
+                                <button type="submit" class="delete-button" style="background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class='air air1'></div>
+    <div class='air air2'></div>
+</section>
+<!-- ... Your previous HTML code ... -->
+
+<script>
+    $(document).ready(function(){
+        $("#myInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#myTable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        $(".edit-button").click(function() {
+            var row = $(this).closest("tr");
+            var descriptionSpan = row.find(".description");
+            var editInput = row.find(".edit-input");
+            var editButton = row.find(".edit-button");
+            var cancelButton = row.find(".cancel-button");
+            var editForm = row.find(".edit-form");
+            var deleteButton = row.find(".delete-button");
+
+            var oldDescription = descriptionSpan.text(); // Store the old description
+
+            descriptionSpan.hide();
+            editInput.val(oldDescription); // Set the input value to the old description
+            editInput.show();
+            editButton.hide();
+            cancelButton.show();
+            editForm.show();
+            deleteButton.hide();
+        });
+
+        $(".ok-button").click(function() {
+            var row = $(this).closest("tr");
+            var descriptionSpan = row.find(".description");
+            var editInput = row.find(".edit-input");
+            var editForm = row.find(".edit-form");
+            var newDescription = editInput.val(); // Get the edited description
+
+            // Set the value of the edited_description input field in the form
+            editForm.find(".edited-description").val(newDescription);
+
+            descriptionSpan.text(newDescription); // Update the displayed description
+            descriptionSpan.show();
+            editInput.hide();
+            editButton.show();
+            cancelButton.hide();
+            editForm.hide();
+            deleteButton.show();
+        });
+
+        $(".cancel-button").click(function() {
+            var row = $(this).closest("tr");
+            var descriptionSpan = row.find(".description");
+            var editInput = row.find(".edit-input");
+            var editButton = row.find(".edit-button");
+            var cancelButton = row.find(".cancel-button");
+            var editForm = row.find(".edit-form");
+            var deleteButton = row.find(".delete-button");
+
+            descriptionSpan.show();
+            editInput.hide();
+            editButton.show();
+            cancelButton.hide();
+            editForm.hide();
+            deleteButton.show();
+        });
+    });
+</script>
+
+{% endblock %}

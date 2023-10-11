@@ -1,7 +1,7 @@
 """Flask routes to run application"""
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
-from models import Nadador, NadadorPrueba
+from models import Nadador, NadadorPrueba, Prueba, Categoria
 from utils import (
     convert_timestamp,
     order_swimmers_comp,
@@ -9,6 +9,7 @@ from utils import (
     convert_one_timestamp
 )
 from database import (
+    get_pruebas_info,
     add_nadador,
     get_categorias,
     get_clubes,
@@ -30,7 +31,9 @@ from database import (
     get_ordered_swimmers_rec,
     insert_comp_time,
     del_comp_time,
-    get_ranked_swimmers
+    get_ranked_swimmers,
+    update_prueba,
+    del_prueba
 )
 app = Flask(__name__)
 
@@ -256,6 +259,32 @@ def result_event(id_prueba, id_categoria, sexo):
 
     return render_template("ranking.html", nadadores=nadadores_ranked,
                            prueba=prueba, categoria=categoria, sexo=sexo)
+
+
+@app.route('/pruebas')
+def list_pruebas():
+    """Show list of events"""
+    rows = get_pruebas_info()
+    return render_template("pruebas.html", rows=rows)
+
+@app.route('/editprueba', methods=['POST'])
+def edit_prueba():
+    """Update event info"""
+    prueba = Prueba(request.form['edited_description'])
+    prueba.id_prueba = request.form['id_edit']
+
+    update_prueba(prueba)
+    rows = get_pruebas_info()
+    return render_template("pruebas.html", rows=rows)
+
+@app.route('/deleteprueba', methods=['POST'])
+def delete_prueba():
+    """Update event info"""
+    id_prueba = request.form['id_del']
+    del_prueba(id_prueba)
+
+    rows = get_pruebas_info()
+    return render_template("pruebas.html", rows=rows)
 
 if __name__ == "__main__":
     app.run(debug=True)
