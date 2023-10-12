@@ -49,8 +49,6 @@ def add_nadador(nadador):
             )
             inserted_id = cur.lastrowid
 
-            print(nadador.pruebas)
-
             for prueba in nadador.pruebas:
                 cur.execute(
                     """INSERT INTO Nadadores_Pruebas
@@ -477,3 +475,19 @@ def del_prueba(id_prueba):
         con.rollback()
     finally:
         con.close()
+
+def insert_prueba(prueba):
+    """Adds new event to database"""
+    print(prueba.descripcion)
+    try:
+        with connect_db() as con:
+            cur = con.cursor()
+            cur.execute(
+                """INSERT INTO Pruebas(descripcion)
+                VALUES (?)""",
+                (prueba.descripcion,)
+            )
+            con.commit()
+            print("Registro añadido a la base de datos")
+    except sqlite3.Error as err:
+        print(f"Error en el INSERT: {str(err)}")

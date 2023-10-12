@@ -3,6 +3,24 @@
 Lista Pruebas
 {% endblock %}
 {% block content %}
+<!-- Modal for Delete Confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirmar 👀</h5>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro que querés eliminar esta prueba? 
+                <br>
+                Todos los nadadores que estaban registrados en esta prueba no la van a tener más 😐
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="submitFormButton">Eliminar</button>            </div>
+            
+        </div>
+    </div>
+</div>
 <section>
     <div class="container mt-3">
         <h2 class="title-background">PRUEBAS REGISTRADAS</h2>
@@ -15,11 +33,28 @@ Lista Pruebas
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>Descripcion</th>
+                        <th>Descripción</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="myTable">
+                    <tr id="new-prueba-row" style="display: none;">
+                        <td>
+                            <input type="text" class="new-description">
+                        </td>
+                        <td>
+                            <form action="{{ url_for('add_prueba') }}" method="POST" class="add-form">
+                                <input type="text" name="new_description" class="new-description" style="display: none;">
+                                <button type="submit" class="ok-button" style="background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button type="button" class="cancel-button" style="background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    
                     {% for prueba in rows %}
                     <tr>
                         <td>
@@ -44,20 +79,20 @@ Lista Pruebas
 
                             <form action="{{ url_for('delete_prueba') }}" method="POST" style="display: inline;" class="delete-form" id="deleteForm">
                                 <input type="hidden" name="id_del" value="{{ prueba.id_prueba }}">
-                                <button type="submit" class="delete-button" style="background: none; border: none; cursor: pointer;">
+                                <button type="button" class="open-delete-modal" style="background: none; border: none; cursor: pointer;">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                            </form>
+                            </form>      
                         </td>
                     </tr>
                     {% endfor %}
+
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div class='air air1'></div>
-    <div class='air air2'></div>
+
 </section>
 <!-- ... Your previous HTML code ... -->
 
@@ -69,6 +104,7 @@ Lista Pruebas
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
+
 
         $(".edit-button").click(function() {
             var row = $(this).closest("tr");
@@ -126,6 +162,67 @@ Lista Pruebas
             deleteButton.show();
         });
     });
+
+    // Show the new prueba row when "Añadir Prueba" button is clicked
+    $(".btn-success").click(function() {
+        $("#new-prueba-row").show();
+    });
+
+    // Handle the cancel button in the new row
+    $(".new-description").on("input", function() {
+        // Hide the new prueba row if the input field is empty
+        if ($(this).val() === "") {
+            $("#new-prueba-row").hide();
+        }
+    });
+
+    // Handle the cancel button in the new row
+    $(".cancel-button").click(function() {
+        // Hide the new prueba row
+        $("#new-prueba-row").hide();
+    });
+
+    // Handle the OK button in the new row
+    $(".ok-button").click(function() {
+        var row = $("#new-prueba-row");
+        var newDescription = row.find(".new-description").val();
+
+        if (newDescription) {
+            // Set the value of the new_description input field in the form
+            row.find(".new-description").val(newDescription);
+            // Submit the form to Flask
+            row.find(".add-form").submit();
+        }
+    });
+
+     // Submit the form when the "Eliminar" button in the modal is clicked
+     $("#submitFormButton").click(function () {
+            // Trigger the form submission
+            $("#deleteForm").submit();
+        });
+
+        $(document).ready(function () {
+            $(".open-delete-modal").on("click", function () {
+                // Get the ID from the data attribute of the clicked button's parent form
+                var rowId = $(this).closest(".delete-form").find("input[name='id_del']").val();
+                console.log("rowId:", rowId);
+
+                // Send the rowId to the server using AJAX
+                $.ajax({
+                    type: "POST",
+                    url: "/deleteprueba", // Replace with the actual URL of your server endpoint
+                    data: { rowId: rowId }, // Send the rowId as data
+                    error: function (error) {
+                        // Handle errors if any
+                        console.error("Error:", error);
+                    }
+                });
+
+                // Show the modal
+                $("#deleteModal").modal("show");
+            });
+    	    });
+
 </script>
 
 {% endblock %}

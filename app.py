@@ -33,8 +33,10 @@ from database import (
     del_comp_time,
     get_ranked_swimmers,
     update_prueba,
-    del_prueba
+    del_prueba,
+    insert_prueba
 )
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -280,11 +282,21 @@ def edit_prueba():
 @app.route('/deleteprueba', methods=['POST'])
 def delete_prueba():
     """Update event info"""
-    id_prueba = request.form['id_del']
+    id_prueba = request.form.get('rowId')
     del_prueba(id_prueba)
 
     rows = get_pruebas_info()
     return render_template("pruebas.html", rows=rows)
+
+@app.route('/addprueba', methods=['POST'])
+def add_prueba():
+    """Add an event"""
+    prueba = Prueba(request.form['new_description'])
+    insert_prueba(prueba)
+    
+    rows = get_pruebas_info()
+    return render_template("pruebas.html", rows=rows)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

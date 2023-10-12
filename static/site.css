@@ -75,7 +75,7 @@
   }
 
   .table-wrapper-scroll-y {
-    max-height: 350px; /* Set the maximum height for scrolling */
+    max-height: 325px; /* Set the maximum height for scrolling */
     overflow-y: auto; /* Enable vertical scrolling */
 }
 
