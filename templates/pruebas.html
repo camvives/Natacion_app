@@ -3,24 +3,6 @@
 Lista Pruebas
 {% endblock %}
 {% block content %}
-<!-- Modal for Delete Confirmation -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Confirmar 👀</h5>
-            </div>
-            <div class="modal-body">
-                ¿Estás seguro que querés eliminar esta prueba? 
-                <br>
-                Todos los nadadores que estaban registrados en esta prueba no la van a tener más 😐
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="submitFormButton">Eliminar</button>            </div>
-            
-        </div>
-    </div>
-</div>
 <section>
     <div class="container mt-3">
         <h2 class="title-background">PRUEBAS REGISTRADAS</h2>
@@ -77,14 +59,32 @@ Lista Pruebas
                                 </button>
                             </form>
 
-                            <form action="{{ url_for('delete_prueba') }}" method="POST" style="display: inline;" class="delete-form" id="deleteForm">
-                                <input type="hidden" name="id_del" value="{{ prueba.id_prueba }}">
-                                <button type="button" class="open-delete-modal" style="background: none; border: none; cursor: pointer;">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>      
+                            <button type="button" class="open-delete-modal" data-toggle="modal" data-target="#deleteModal-{{ prueba.id_prueba }}" style="background: none; border: none; cursor: pointer;">
+                                <i class="fas fa-trash"></i>
+                            </button>   
                         </td>
                     </tr>
+                    <!-- Modal for Delete Confirmation -->
+                    <div class="modal fade" id="deleteModal-{{ prueba.id_prueba }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Confirmar 👀</h5>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Estás seguro que querés eliminar esta prueba? 
+                                    <br>
+                                    Todos los nadadores que estaban registrados en esta prueba no la van a tener más 😐
+                                </div>
+                                <div class="modal-footer">
+                                <form action="{{ url_for('delete_prueba') }}" method="POST" style="display: inline;" class="delete-form" id="deleteForm">
+                                    <input type="hidden" name="id_del" value="{{ prueba.id_prueba }}">
+                                    <button type="submit" class="btn btn-danger" id="submitFormButton">Eliminar</button>
+                                </form>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
 
                 </tbody>
@@ -94,7 +94,7 @@ Lista Pruebas
 
 
 </section>
-
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function(){
         $("#myInput").on("keyup", function() {
@@ -161,6 +161,14 @@ Lista Pruebas
             editForm.hide();
             deleteButton.show();
         });
+
+             // Click event for the delete buttons
+            $(".open-delete-modal").on("click", function() {
+            var idToDelete = $(this).closest("tr").find("input[name='id']").val(); // Get the ID from the hidden input
+            var deleteForm = $("#deleteForm"); 
+
+            deleteForm.find("input[name='id_del']").val(idToDelete);
+        });
     });
 
     // Show the new prueba row when "Añadir Prueba" button is clicked
@@ -201,27 +209,7 @@ Lista Pruebas
             $("#deleteForm").submit();
         });
 
-        $(document).ready(function () {
-            $(".open-delete-modal").on("click", function () {
-                // Get the ID from the data attribute of the clicked button's parent form
-                var rowId = $(this).closest(".delete-form").find("input[name='id_del']").val();
-                console.log("rowId:", rowId);
 
-                // Send the rowId to the server using AJAX
-                $.ajax({
-                    type: "POST",
-                    url: "/deleteprueba", // Replace with the actual URL of your server endpoint
-                    data: { rowId: rowId }, // Send the rowId as data
-                    error: function (error) {
-                        // Handle errors if any
-                        console.error("Error:", error);
-                    }
-                });
-
-                // Show the modal
-                $("#deleteModal").modal("show");
-            });
-    	    });
 
 </script>
 

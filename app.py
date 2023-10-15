@@ -144,7 +144,7 @@ def editrec():
 def delete():
     """Delete a Nadador from the database"""
     try:
-        id_nadador = request.form.get('rowId')
+        id_nadador = request.form.get('id_del')
         delete_nadador(id_nadador)
     except sqlite3.Error as err:
         print("Error:", err)
@@ -286,7 +286,7 @@ def edit_prueba():
 @app.route('/deleteprueba', methods=['POST'])
 def delete_prueba():
     """Delete event"""
-    id_prueba = request.form.get('rowId')
+    id_prueba = request.form.get('id_del')
     del_prueba(id_prueba)
 
     return list_pruebas()
@@ -304,7 +304,6 @@ def list_categorias():
     """Show list of categories"""
     rows = get_categorias_info()
     return render_template("categorias.html", rows=rows)
-
 
 @app.route('/editcategoria', methods=['POST'])
 def edit_categoria():
@@ -339,7 +338,6 @@ def list_clubes():
     rows = get_clubes_info()
     return render_template("clubes.html", rows=rows)
 
-
 @app.route('/editclub', methods=['POST'])
 def edit_club():
     """Update club info"""
@@ -352,7 +350,7 @@ def edit_club():
 @app.route('/deleteclub', methods=['POST'])
 def delete_club():
     """Delete club """
-    id_club = request.form.get('rowId')
+    id_club = request.form.get('id_del')
     del_club(id_club)
 
     return list_clubes()

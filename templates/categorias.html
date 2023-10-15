@@ -61,12 +61,12 @@ Lista Categorias
                                 </button>
                             </form>
 
-                            <button type="button" class="open-delete-modal" style="background: none; border: none; cursor: pointer;">
+                            <button type="button" class="open-delete-modal" data-toggle="modal" data-target="#deleteModal-{{ categoria.id_categoria }}" style="background: none; border: none; cursor: pointer;">
                                 <i class="fas fa-trash"></i>
-                            </button>    
+                            </button>     
                         </td>
                     </tr>
-                    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="deleteModal-{{ categoria.id_categoria }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -82,7 +82,7 @@ Lista Categorias
                                         <input type="hidden" name="id_del" value="{{ categoria.id_categoria }}">
                                         <button type="submit" class="btn btn-danger" id="submitFormButton">Eliminar</button> 
                                     </form>      
-                    
+                                </div>
                                 
                             </div>
                         </div>
@@ -96,7 +96,7 @@ Lista Categorias
 
 
 </section>
-
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function(){
         $("#myInput").on("keyup", function() {
@@ -162,6 +162,14 @@ Lista Categorias
             cancelButton.hide();
             editForm.hide();
             deleteButton.show();
+        });
+
+            // Click event for the delete buttons
+            $(".open-delete-modal").on("click", function() {
+            var idToDelete = $(this).closest("tr").find("input[name='id']").val(); // Get the ID from the hidden input
+            var deleteForm = $("#deleteForm"); 
+
+            deleteForm.find("input[name='id_del']").val(idToDelete);
         });
     });
 
