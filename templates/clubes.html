@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}
-Lista Pruebas
+Lista Categorias
 {% endblock %}
 {% block content %}
 <!-- Modal for Delete Confirmation -->
@@ -11,9 +11,9 @@ Lista Pruebas
                 <h5 class="modal-title" id="exampleModalLabel">Confirmar 👀</h5>
             </div>
             <div class="modal-body">
-                ¿Estás seguro que querés eliminar esta prueba? 
+                ¿Estás seguro que querés eliminar este club? 
                 <br>
-                Todos los nadadores que estaban registrados en esta prueba no la van a tener más 😐
+                Todos los nadadores de este club no la van a tener más asignado 😐
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" id="submitFormButton">Eliminar</button>            </div>
@@ -23,11 +23,11 @@ Lista Pruebas
 </div>
 <section>
     <div class="container mt-3">
-        <h2 class="title-background">PRUEBAS REGISTRADAS</h2>
+        <h2 class="title-background">CLUB REGISTRADAS</h2>
         <div class="d-grid gap-2 col-4 mx-auto">
-            <button type="button" class="btn btn-success mb-3">Añadir Prueba</button>
+            <button type="button" class="btn btn-success mb-3">Añadir Club</button>
         </div>
-        <input class="form-control" id="myInput" type="text" placeholder="Buscar...">
+        <input class="form-control" id="search" type="text" placeholder="Buscar...">
         <!-- Wrap the table in a div with a class for scrolling -->
         <div class="table-wrapper-scroll-y mt-4">
             <table class="table table-bordered table-striped">
@@ -43,7 +43,7 @@ Lista Pruebas
                             <input type="text" class="new-description">
                         </td>
                         <td>
-                            <form action="{{ url_for('add_prueba') }}" method="POST" class="add-form">
+                            <form action="{{ url_for('add_club') }}" method="POST" class="add-form">
                                 <input type="text" name="new_description" class="new-description" style="display: none;">
                                 <button type="submit" class="ok-button" style="background: none; border: none; cursor: pointer;">
                                     <i class="fas fa-check"></i>
@@ -55,19 +55,19 @@ Lista Pruebas
                         </td>
                     </tr>
                     
-                    {% for prueba in rows %}
+                    {% for club in rows %}
                     <tr>
                         <td>
-                            <span class="description">{{ prueba.descripcion }}</span>
-                            <input type="text" class="edit-input" style="display: none;" value="{{ prueba.descripcion }}">
+                            <span class="description">{{ club.descripcion }}</span>
+                            <input type="text" class="edit-input" style="display: none;" value="{{ club.descripcion }}">
                         </td>
                         <td>
                             <button class="edit-button" style="background: none; border: none; cursor: pointer;">
                                 <i class="fas fa-edit"></i>
                             </button>
 
-                            <form action="{{ url_for('edit_prueba') }}" method="POST" style="display: none;" class="edit-form" id="editForm">
-                                <input type="hidden" name="id_edit" value="{{ prueba.id_prueba }}">
+                            <form action="{{ url_for('edit_club') }}" method="POST" style="display: none;" class="edit-form" id="editForm">
+                                <input type="hidden" name="id_edit" value="{{ club.id_club }}">
                                 <input type="text" name="edited_description" class="edited-description" style="display: none;">
                                 <button type="submit" class="ok-button" style="background: none; border: none; cursor: pointer;">
                                     <i class="fas fa-check"></i>
@@ -77,8 +77,8 @@ Lista Pruebas
                                 </button>
                             </form>
 
-                            <form action="{{ url_for('delete_prueba') }}" method="POST" style="display: inline;" class="delete-form" id="deleteForm">
-                                <input type="hidden" name="id_del" value="{{ prueba.id_prueba }}">
+                            <form action="{{ url_for('delete_club') }}" method="POST" style="display: inline;" class="delete-form" id="deleteForm">
+                                <input type="hidden" name="id_del" value="{{ club.id_club }}">
                                 <button type="button" class="open-delete-modal" style="background: none; border: none; cursor: pointer;">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -210,7 +210,7 @@ Lista Pruebas
                 // Send the rowId to the server using AJAX
                 $.ajax({
                     type: "POST",
-                    url: "/deleteprueba", // Replace with the actual URL of your server endpoint
+                    url: "/deleteclub", // Replace with the actual URL of your server endpoint
                     data: { rowId: rowId }, // Send the rowId as data
                     error: function (error) {
                         // Handle errors if any
@@ -224,5 +224,10 @@ Lista Pruebas
     	    });
 
 </script>
+ 
+
+
+
+
 
 {% endblock %}

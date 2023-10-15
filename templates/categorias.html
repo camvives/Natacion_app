@@ -1,33 +1,17 @@
 {% extends "layout.html" %}
 {% block title %}
-Lista Pruebas
+Lista Categorias
 {% endblock %}
 {% block content %}
 <!-- Modal for Delete Confirmation -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Confirmar 👀</h5>
-            </div>
-            <div class="modal-body">
-                ¿Estás seguro que querés eliminar esta prueba? 
-                <br>
-                Todos los nadadores que estaban registrados en esta prueba no la van a tener más 😐
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="submitFormButton">Eliminar</button>            </div>
-            
-        </div>
-    </div>
-</div>
+
 <section>
     <div class="container mt-3">
-        <h2 class="title-background">PRUEBAS REGISTRADAS</h2>
+        <h2 class="title-background">CATEGORIAS REGISTRADAS</h2>
         <div class="d-grid gap-2 col-4 mx-auto">
-            <button type="button" class="btn btn-success mb-3">Añadir Prueba</button>
+            <button type="button" class="btn btn-success mb-3">Añadir Categoría</button>
         </div>
-        <input class="form-control" id="myInput" type="text" placeholder="Buscar...">
+        <input class="form-control" id="search" type="text" placeholder="Buscar...">
         <!-- Wrap the table in a div with a class for scrolling -->
         <div class="table-wrapper-scroll-y mt-4">
             <table class="table table-bordered table-striped">
@@ -43,7 +27,7 @@ Lista Pruebas
                             <input type="text" class="new-description">
                         </td>
                         <td>
-                            <form action="{{ url_for('add_prueba') }}" method="POST" class="add-form">
+                            <form action="{{ url_for('add_categoria') }}" method="POST" class="add-form">
                                 <input type="text" name="new_description" class="new-description" style="display: none;">
                                 <button type="submit" class="ok-button" style="background: none; border: none; cursor: pointer;">
                                     <i class="fas fa-check"></i>
@@ -55,36 +39,54 @@ Lista Pruebas
                         </td>
                     </tr>
                     
-                    {% for prueba in rows %}
+                    {% for categoria in rows %}
                     <tr>
                         <td>
-                            <span class="description">{{ prueba.descripcion }}</span>
-                            <input type="text" class="edit-input" style="display: none;" value="{{ prueba.descripcion }}">
+                            <span class="description">{{ categoria.descripcion }}</span>
+                            <input type="text" class="edit-input" style="display: none;" value="{{ categoria.descripcion }}">
                         </td>
                         <td>
                             <button class="edit-button" style="background: none; border: none; cursor: pointer;">
                                 <i class="fas fa-edit"></i>
                             </button>
 
-                            <form action="{{ url_for('edit_prueba') }}" method="POST" style="display: none;" class="edit-form" id="editForm">
-                                <input type="hidden" name="id_edit" value="{{ prueba.id_prueba }}">
+                            <form action="{{ url_for('edit_categoria') }}" method="POST" style="display: none;" class="edit-form" id="editForm">
+                                <input type="hidden" name="id_edit" value="{{ categoria.id_categoria }}">
                                 <input type="text" name="edited_description" class="edited-description" style="display: none;">
                                 <button type="submit" class="ok-button" style="background: none; border: none; cursor: pointer;">
                                     <i class="fas fa-check"></i>
                                 </button>
-                                <button type="button" class="cancel-button" style="display: none; background: none; border: none; cursor: pointer;">
+                                <button type="button" class="cancel-button"  data-toggle="modal" data-target="#deleteModal" style="display: none; background: none; border: none; cursor: pointer;">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </form>
 
-                            <form action="{{ url_for('delete_prueba') }}" method="POST" style="display: inline;" class="delete-form" id="deleteForm">
-                                <input type="hidden" name="id_del" value="{{ prueba.id_prueba }}">
-                                <button type="button" class="open-delete-modal" style="background: none; border: none; cursor: pointer;">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>      
+                            <button type="button" class="open-delete-modal" style="background: none; border: none; cursor: pointer;">
+                                <i class="fas fa-trash"></i>
+                            </button>    
                         </td>
                     </tr>
+                    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Confirmar 👀</h5>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Estás seguro que querés eliminar esta categoría? 
+                                    <br>
+                                    Todos los nadadores de esta categoría no la van a tener más 😐
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{{ url_for('delete_categoria') }}" method="POST" style="display: inline;" class="delete-form" id="deleteForm">
+                                        <input type="hidden" name="id_del" value="{{ categoria.id_categoria }}">
+                                        <button type="submit" class="btn btn-danger" id="submitFormButton">Eliminar</button> 
+                                    </form>      
+                    
+                                
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
 
                 </tbody>
@@ -195,33 +197,20 @@ Lista Pruebas
         }
     });
 
-     // Submit the form when the "Eliminar" button in the modal is clicked
-     $("#submitFormButton").click(function () {
-            // Trigger the form submission
-            $("#deleteForm").submit();
-        });
 
-        $(document).ready(function () {
-            $(".open-delete-modal").on("click", function () {
-                // Get the ID from the data attribute of the clicked button's parent form
-                var rowId = $(this).closest(".delete-form").find("input[name='id_del']").val();
-                console.log("rowId:", rowId);
+    $(document).ready(function () {
+    $(".open-delete-modal").on("click", function () {
+        // Find the parent row of the clicked button
+        var parentRow = $(this).closest("tr");
 
-                // Send the rowId to the server using AJAX
-                $.ajax({
-                    type: "POST",
-                    url: "/deleteprueba", // Replace with the actual URL of your server endpoint
-                    data: { rowId: rowId }, // Send the rowId as data
-                    error: function (error) {
-                        // Handle errors if any
-                        console.error("Error:", error);
-                    }
-                });
+        // Find the modal associated with the parent row
+        var modal = parentRow.find(".modal");
 
-                // Show the modal
-                $("#deleteModal").modal("show");
-            });
-    	    });
+        // Show the modal
+        modal.modal("show");
+    });
+});
+
 
 </script>
 

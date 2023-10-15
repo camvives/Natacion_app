@@ -59,3 +59,15 @@ class Categoria:
     def __init__(self, descripcion):
         self.id_categoria = None
         self.descripcion = descripcion
+
+class Club:
+    """Represents a club.
+
+    Attributes:
+        id_club(int): The club's identifier.
+        descripcion (str): The club's description.
+    """
+    def __init__(self, descripcion):
+        self.id_club = None
+        self.descripcion = descripcion
+        

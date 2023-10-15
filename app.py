@@ -1,7 +1,7 @@
 """Flask routes to run application"""
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
-from models import Nadador, NadadorPrueba, Prueba, Categoria
+from models import Nadador, NadadorPrueba, Prueba, Categoria, Club
 from utils import (
     convert_timestamp,
     order_swimmers_comp,
@@ -34,7 +34,15 @@ from database import (
     get_ranked_swimmers,
     update_prueba,
     del_prueba,
-    insert_prueba
+    insert_prueba,
+    get_categorias_info,
+    update_categoria,
+    insert_categoria,
+    del_categoria,
+    get_clubes_info,
+    update_club,
+    insert_club,
+    del_club,
 )
 
 app = Flask(__name__)
@@ -156,7 +164,6 @@ def orden_recreativo():
 
     return render_template("recreativo.html", pruebas=pruebas)
 
-
 @app.route('/ordercomp/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
 def ordercomp(id_prueba, id_categoria, sexo):
     """Asign a pool number and a lane number for each swimmer in an event"""
@@ -202,7 +209,6 @@ def vieworderrec(id_prueba, id_categoria, sexo):
     return render_template("piletas_pruebas.html", piletas=piletas,
                            prueba=prueba, categoria=categoria, sexo=sexo,
                            tipo='Recreativo')
-
 
 @app.route('/cargatime/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
 def cargatime(id_prueba, id_categoria, sexo):
@@ -262,7 +268,6 @@ def result_event(id_prueba, id_categoria, sexo):
     return render_template("ranking.html", nadadores=nadadores_ranked,
                            prueba=prueba, categoria=categoria, sexo=sexo)
 
-
 @app.route('/pruebas')
 def list_pruebas():
     """Show list of events"""
@@ -276,27 +281,89 @@ def edit_prueba():
     prueba.id_prueba = request.form['id_edit']
 
     update_prueba(prueba)
-    rows = get_pruebas_info()
-    return render_template("pruebas.html", rows=rows)
+    return list_pruebas()
 
 @app.route('/deleteprueba', methods=['POST'])
 def delete_prueba():
-    """Update event info"""
+    """Delete event"""
     id_prueba = request.form.get('rowId')
     del_prueba(id_prueba)
 
-    rows = get_pruebas_info()
-    return render_template("pruebas.html", rows=rows)
+    return list_pruebas()
 
 @app.route('/addprueba', methods=['POST'])
 def add_prueba():
     """Add an event"""
     prueba = Prueba(request.form['new_description'])
     insert_prueba(prueba)
-    
-    rows = get_pruebas_info()
-    return render_template("pruebas.html", rows=rows)
 
+    return list_pruebas()
+
+@app.route('/categorias')
+def list_categorias():
+    """Show list of categories"""
+    rows = get_categorias_info()
+    return render_template("categorias.html", rows=rows)
+
+
+@app.route('/editcategoria', methods=['POST'])
+def edit_categoria():
+    """Update category info"""
+    categoria = Categoria(request.form['edited_description'])
+    categoria.id_categoria = request.form['id_edit']
+
+    update_categoria(categoria)
+    return list_categorias()
+
+@app.route('/deletecategoria', methods=['POST'])
+def delete_categoria():
+    """Delete category """
+    id_categoria = request.form.get('id_del')
+
+    print(id_categoria)
+    del_categoria(id_categoria)
+
+    return list_categorias()
+
+@app.route('/addcategoria', methods=['POST'])
+def add_categoria():
+    """Add a category"""
+    categoria = Categoria(request.form['new_description'])
+    insert_categoria(categoria)
+
+    return list_categorias()
+
+@app.route('/clubes')
+def list_clubes():
+    """Show list of clubs"""
+    rows = get_clubes_info()
+    return render_template("clubes.html", rows=rows)
+
+
+@app.route('/editclub', methods=['POST'])
+def edit_club():
+    """Update club info"""
+    club = Club(request.form['edited_description'])
+    club.id_club = request.form['id_edit']
+
+    update_club(club)
+    return list_clubes()
+
+@app.route('/deleteclub', methods=['POST'])
+def delete_club():
+    """Delete club """
+    id_club = request.form.get('rowId')
+    del_club(id_club)
+
+    return list_clubes()
+
+@app.route('/addclub', methods=['POST'])
+def add_club():
+    """Add a club"""
+    club = Club(request.form['new_description'])
+    insert_club(club)
+
+    return list_clubes()
 
 if __name__ == "__main__":
     app.run(debug=True)

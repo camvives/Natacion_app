@@ -71,8 +71,8 @@ def get_nadadores_info():
         cur.execute("""SELECT n.Id, n.Sexo, n.IdCategoria, n.IdClub,
                         n.NombreApellido, c.descripcion as Club,
                         cat.descripcion as Categoria FROM Nadadores n
-                        INNER JOIN Clubes c on n.IdClub = c.Id
-                        INNER JOIN Categorias cat on n.IdCategoria = cat.Id""")
+                        LEFT JOIN Clubes c on n.IdClub = c.Id
+                        LEFT JOIN Categorias cat on n.IdCategoria = cat.Id""")
         rows = cur.fetchall()
         nadador_list = []
         for row in rows:
@@ -97,8 +97,8 @@ def get_nadador_info(id_nadador):
         cur.execute("""SELECT n.Id, n.Sexo, n.IdCategoria, n.IdClub,
                         n.NombreApellido, c.descripcion as Club,
                         cat.descripcion as Categoria FROM Nadadores n
-                        INNER JOIN Clubes c on n.IdClub = c.Id
-                        INNER JOIN Categorias cat on n.IdCategoria = cat.Id
+                        LEFT JOIN Clubes c on n.IdClub = c.Id
+                        LEFT JOIN Categorias cat on n.IdCategoria = cat.Id
                         WHERE n.Id = ?""", (id_nadador, ))
         row = cur.fetchone()
         if row:
@@ -486,6 +486,134 @@ def insert_prueba(prueba):
                 """INSERT INTO Pruebas(descripcion)
                 VALUES (?)""",
                 (prueba.descripcion,)
+            )
+            con.commit()
+            print("Registro añadido a la base de datos")
+    except sqlite3.Error as err:
+        print(f"Error en el INSERT: {str(err)}")
+
+def get_categorias_info():
+    """Gets all categories information"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT * FROM categorias""")
+        rows = cur.fetchall()
+        categorias_list = []
+        for row in rows:
+            categoria = Categoria(row['descripcion'])
+            categoria.id_categoria = row["Id"]
+            categorias_list.append(categoria)
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        categorias_list = []
+    finally:
+        con.close()
+    return categorias_list
+
+def update_categoria(categoria):
+    """Update category info"""
+    print(categoria.id_categoria)
+    try:
+        con = connect_db()
+        con.execute("""UPDATE Categorias SET descripcion = ?
+                        WHERE Id = ?""",
+                        (categoria.descripcion, categoria.id_categoria))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
+def del_categoria(id_categoria):
+    """Delete event"""
+    try:
+        con = connect_db()
+        con.execute("""DELETE FROM Categorias
+                        WHERE Id = ?""",
+                        (id_categoria,))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
+def insert_categoria(categoria):
+    """Adds new category to database"""
+    print(categoria.descripcion)
+    try:
+        with connect_db() as con:
+            cur = con.cursor()
+            cur.execute(
+                """INSERT INTO Categorias(descripcion)
+                VALUES (?)""",
+                (categoria.descripcion,)
+            )
+            con.commit()
+            print("Registro añadido a la base de datos")
+    except sqlite3.Error as err:
+        print(f"Error en el INSERT: {str(err)}")
+
+def get_clubes_info():
+    """Gets all clubs information"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT * FROM Clubes""")
+        rows = cur.fetchall()
+        clubes_list = []
+        for row in rows:
+            club = Categoria(row['descripcion'])
+            club.id_club = row["Id"]
+            clubes_list.append(club)
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        clubes_list = []
+    finally:
+        con.close()
+    return clubes_list
+
+def update_club(club):
+    """Update club info"""
+    try:
+        con = connect_db()
+        con.execute("""UPDATE Clubes SET descripcion = ?
+                        WHERE Id = ?""",
+                        (club.descripcion, club.id_club))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
+def del_club(id_club):
+    """Delete club"""
+    try:
+        con = connect_db()
+        con.execute("""DELETE FROM Clubes
+                        WHERE Id = ?""",
+                        (id_club,))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
+def insert_club(club):
+    """Adds new category to database"""
+    try:
+        with connect_db() as con:
+            cur = con.cursor()
+            cur.execute(
+                """INSERT INTO Clubes(descripcion)
+                VALUES (?)""",
+                (club.descripcion,)
             )
             con.commit()
             print("Registro añadido a la base de datos")
