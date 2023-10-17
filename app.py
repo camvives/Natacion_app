@@ -1,5 +1,6 @@
 """Flask routes to run application"""
 import sqlite3
+import webview
 from flask import Flask, render_template, request, redirect, url_for
 from models import Nadador, NadadorPrueba, Prueba, Categoria, Club
 from utils import (
@@ -46,6 +47,7 @@ from database import (
 )
 
 app = Flask(__name__)
+window = webview.create_window('Natacion App', app)
 
 @app.route("/")
 def home():
@@ -364,4 +366,5 @@ def add_club():
     return list_clubes()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    #app.run(debug=True)
+    webview.start()
