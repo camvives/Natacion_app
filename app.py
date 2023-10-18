@@ -1,5 +1,6 @@
 """Flask routes to run application"""
 import sqlite3
+import create_table
 import webview
 from flask import Flask, render_template, request, redirect, url_for
 from models import Nadador, NadadorPrueba, Prueba, Categoria, Club
@@ -44,10 +45,12 @@ from database import (
     update_club,
     insert_club,
     del_club,
+    get_top_3_swimmers
 )
 
 app = Flask(__name__)
 window = webview.create_window('Natacion App', app)
+
 
 @app.route("/")
 def home():
@@ -270,6 +273,17 @@ def result_event(id_prueba, id_categoria, sexo):
     return render_template("ranking.html", nadadores=nadadores_ranked,
                            prueba=prueba, categoria=categoria, sexo=sexo)
 
+@app.route('/result_event_top/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
+def result_event_top(id_prueba, id_categoria, sexo):
+    """Show swimmers rank based on event time"""
+
+    nadadores_ranked = get_top_3_swimmers(id_prueba, id_categoria, sexo)
+    prueba = get_one_prueba(id_prueba)
+    categoria = get_one_categoria(id_categoria)
+
+    return render_template("podio.html", nadadores=nadadores_ranked,
+                           prueba=prueba, categoria=categoria, sexo=sexo)
+
 @app.route('/pruebas')
 def list_pruebas():
     """Show list of events"""
@@ -365,6 +379,9 @@ def add_club():
 
     return list_clubes()
 
+
+
 if __name__ == "__main__":
-    #app.run(debug=True)
-    webview.start()
+    app.run(debug=True)
+    create_table.create_database_if_not_exists()
+    #webview.start()

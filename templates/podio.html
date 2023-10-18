@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="static\site.css">
+    <title>Podio</title>
+    <style>
+        .rounded-text {
+            background-color: #3498db; 
+            color: #fff; 
+            padding: 10px 20px;
+            border-radius: 20px; 
+            text-align: center;
+            display: inline-block; 
+        }
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        img {
+            width: 60vw; 
+            height: 90vh; 
+        }
+        .first {
+            position: absolute;
+            top: 25vh;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: rgba(58, 63, 63, 0.087);
+            padding: 10px 20px;
+            border-radius: 20px; 
+        }
+        .second {
+            position: absolute;
+            top: 37vh;
+            left: 32vw;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: rgba(58, 63, 63, 0.087);
+            padding: 10px 20px;
+            border-radius: 20px; 
+        }
+        .third {
+            position: absolute;
+            top: 40vh;
+            left: 69vw;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: rgba(58, 63, 63, 0.087);
+            padding: 10px 20px;
+            border-radius: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center;">
+        <h2 class="mb-2 mt-4 ">
+            <span class="rounded-text">{{ prueba.descripcion }}</span>
+            ~
+            <span class="rounded-text">Categoría: {{ categoria.descripcion }}</span>
+            ~
+            <span class="rounded-text">{{ sexo }}</span>
+        </h2>
+        <div class="first">
+            <h2>{{nadadores[0]['NombreApellido']}}</h2>
+            <h3>{{nadadores[0]['Club']}}</h3>
+            <h4>{{nadadores[0]['TiempoCompeticion']}}</h4>
+        </div>
+        <div class="second">
+            <h2>{{nadadores[1]['NombreApellido']}}</h2>
+            <h3>{{nadadores[1]['Club']}}</h3>
+            <h4>{{nadadores[1]['TiempoCompeticion']}}</h4>
+        </div>
+        <div class="third">
+            <h2>{{nadadores[2]['NombreApellido']}}</h2>
+            <h3>{{nadadores[2]['Club']}}</h3>
+            <h4>{{nadadores[2]['TiempoCompeticion']}}</h4>
+        </div>
+        <form action="{{ url_for('results') }}" method="GET" style="display: inline; padding-right: 10px; text-align: center;">
+            <button type="submit" style="background: none; border: none; cursor: pointer;">
+                <i class="fas fa-arrow-left"></i> 
+            </button>
+        </form>
+        
+    
+        <img src="/static/podio.gif" alt="Podio Image">
+    </div>
+    
+
+</body>
+</html>

@@ -23,15 +23,24 @@ Resultados
                     <td>{{ prueba['Categoria'] }}</td>
                     <td>{{ prueba['Sexo'] }}</td>
                     <td>{{ prueba['NumeroNadadores'] }}</td>
-                    <td>                            
+                    <td>           
+                
                         <form action="{{ url_for('result_event', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
                             <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
                             <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
                             <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
                             <button type="submit" style="background: none; border: none; cursor: pointer;">
-                                <i class="fas fa-trophy" title="Ver ranking"></i>
+                                <i class="fa fa-list-ol" aria-hidden="true" title="Ver ranking"></i>
                             </button>
                         </form>
+                        <form action="{{ url_for('result_event_top', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                            <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
+                            <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
+                            <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
+                            <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                <i class="fa fa-trophy" aria-hidden="true" title="Podio"></i>
+                            </button>
+                        </form> 
                     </td>
                 </tr>
                 {% endfor %}

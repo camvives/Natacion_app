@@ -6,13 +6,15 @@ Orden {{tipo}}
     <div class="container mt-3">
         <div class="row justify-content-center">
             <h2 class="mb-2">
+                {% if tipo != 'Carga Tiempos' %}
                 Orden
-                <span class="bubble">{{ tipo }}</span>:
-                <span class="bubble">{{ prueba.descripcion }}</span>
+                {% endif %}
+                <span>{{ tipo }}</span>:
+                <span>{{ prueba.descripcion }}</span>
                 ~
-                <span class="bubble">Categoría: {{ categoria.descripcion }}</span>
+                <span>Categoría: {{ categoria.descripcion }}</span>
                 ~
-                <span class="bubble">{{ sexo }}</span>
+                <span>{{ sexo }}</span>
             </h2>
             <div class="col-8 mt-3">
                 <table class="table table-bordered text-center table-striped table-sm">

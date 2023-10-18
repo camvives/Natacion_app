@@ -427,6 +427,33 @@ def get_ranked_swimmers(id_prueba, id_categoria, sexo):
         con.close()
     return rows
 
+def get_top_3_swimmers(id_prueba, id_categoria, sexo):
+    """Get TOP 3 swimmers for a specific event based on cometition time"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT n.NombreApellido, np.TiempoCompeticion, c.descripcion as Club
+                        FROM Nadadores_Pruebas np
+                        INNER JOIN Nadadores n ON n.Id = np.IdNadador
+                        INNER JOIN Clubes c ON n.IdClub = c.Id
+                        WHERE np.IdPrueba = ? AND n.IdCategoria = ? AND n.Sexo = ?
+                        ORDER BY
+                        CASE
+                            WHEN np.TiempoCompeticion IS NULL THEN 1
+                            ELSE 0
+                        END,
+                        np.TiempoCompeticion ASC
+						LIMIT 3;
+                    """, (id_prueba, id_categoria, sexo))
+        rows = cur.fetchall()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        rows = []
+    finally:
+        con.close()
+    return rows
+
 def get_pruebas_info():
     """Gets all events information"""
     try:
