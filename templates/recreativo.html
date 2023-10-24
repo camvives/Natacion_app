@@ -9,9 +9,7 @@ Orden Recreativo
         <table id="example" class="display" style="width:100%;">
             <thead>
                 <tr>
-                    <th>Prueba</th>
-                    <th>Categoria</th>
-                    <th>Sexo</th>
+                    <th style="width: 50vw;">Prueba</th>
                     <th>Inscriptos</th>
                     <th>Acciones</th>
                 </tr>
@@ -20,43 +18,34 @@ Orden Recreativo
                 {% for prueba in pruebas %}
                 <tr>
                     <td>{{ prueba['Prueba'] }}</td>
-                    <td>{{ prueba['Categoria'] }}</td>
-                    <td>{{ prueba['Sexo'] }}</td>
                     <td>{{ prueba['NumeroNadadores'] }}</td>
-                    <td>                            
-                        <form action="{{ url_for('vieworderrec', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
-                            <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
-                            <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
-                            <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
-                            {% if prueba['OrdenRec'] != None %}
-                            <button type="submit" style="background: none; border: none; cursor: pointer;">
+                    <td>
+                        {% if prueba['OrdenRec'] == None %}                            
+                            <button type="button" style="background: none; border: none; padding-right: 10px;" disabled>
                                 <i class="fas fa-eye" title="Ver"></i>
                             </button>
+                            <form action="{{ url_for('orderrec', id_prueba=prueba['IdPrueba']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                                <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
+                                <button type="submit"  id="submitFormButton" style="background: none; border: none; cursor: pointer; display: inline; padding-right: 10px;">
+                                    <i class="fas fa-flask" title="Generar"></i>
+                                </button>
+                            </form>    
                             {% else %}
-                            <button type="button" style="background: none; border: none;" disabled>
-                                <i class="fas fa-eye" title="Ver"></i>
-                            </button>
-                            {% endif %}
-                        </form>
-                        {% if prueba['OrdenRec'] != None %}
-                        <button type="button" class="open-modal" data-toggle="modal" data-target="#genModal-{{ prueba['IdPrueba']  }}" style="background: none; border: none; cursor: pointer; display: inline; padding-right: 10px;">
-                            <i class="fas fa-flask" title="Generar"></i>
-                        </button>
-                        {% else %}
-                        <form action="{{ url_for('orderrec', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
-                            <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
-                            <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
-                            <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
-                            <button type="submit"  id="submitFormButton" style="background: none; border: none; cursor: pointer; display: inline; padding-right: 10px;">
+                            <form action="{{ url_for('vieworderrec', id_prueba=prueba['IdPrueba']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                                <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
+                                <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-eye" title="Ver"></i>
+                                </button>
+                            </form>
+                            <button type="button" class="open-modal" data-toggle="modal" data-target="#genModal-{{ prueba['IdPrueba']  }}" style="background: none; border: none; cursor: pointer; display: inline; padding-right: 10px;">
                                 <i class="fas fa-flask" title="Generar"></i>
                             </button>
-                        </form>    
-                        {% endif %}
+
+                            {% endif %}
 
                     </td>
                 </tr>
-                <div class="modal fade" id="#genModal-{{ prueba['IdPrueba']  }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
+                <div class="modal fade" id="genModal-{{ prueba['IdPrueba'] }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">                    <div class="modal-dialog" role="document">                    <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalLabel">Confirmar 👀</h5>
@@ -67,10 +56,8 @@ Orden Recreativo
                                 Se va a borrar el anterior 😐
                             </div>
                             <div class="modal-footer">
-                                <form action="{{ url_for('orderrec', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                                <form action="{{ url_for('orderrec', id_prueba=prueba['IdPrueba']) }}" method="POST" style="display: inline; padding-right: 10px;">
                                     <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
-                                    <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
-                                    <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
                                     <button type="submit" class="btn btn-danger" id="submitFormButton">Sí, generar</button>
                                 </form>                  
                             </div>                          
@@ -94,7 +81,7 @@ Orden Recreativo
         $('#example thead th').each(function (index) {
             if (index < $('#example thead th').length - 2) {
                 var title = $(this).text();
-                $(this).html('<input type="text" placeholder="Filtrar ' + title + '" />');
+                $(this).html('<input type="text" style="width: 40vw;" placeholder="Filtrar ' + title + '" />');
             }
         });
 

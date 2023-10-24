@@ -197,7 +197,7 @@ def get_all_pruebas_grouped():
         con.row_factory = sqlite3.Row
         cur = con.cursor()
         cur.execute("""SELECT p.IdPrueba, p.descripcion as Prueba, 
-                        count(*) AS NumeroNadadores, np.Orden
+                        count(*) AS NumeroNadadores, np.Orden, np.OrdenRec
                         FROM Pruebas p
                         INNER JOIN Nadadores_Pruebas np on p.IdPrueba = np.IdPrueba
                         GROUP BY p.IdPrueba
@@ -232,7 +232,7 @@ def get_nadadores_prueba(id_prueba):
         con.close()
     return rows
 
-def get_nadadores_prueba_rec(id_prueba, id_categoria, sexo):
+def get_nadadores_prueba_rec(id_prueba):
     """Get all swimmers for a specific event with random order"""
     try:
         con = connect_db()
@@ -242,9 +242,9 @@ def get_nadadores_prueba_rec(id_prueba, id_categoria, sexo):
                         np.PiletaRec, np.OrdenRec
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n on n.Id = np.IdNadador
-                        WHERE IdPrueba = ? and IdCategoria = ? and Sexo = ?
+                        WHERE IdPrueba = ? 
                         ORDER BY RANDOM()
-                    """, (id_prueba, id_categoria, sexo))
+                    """, (id_prueba,))
         rows = cur.fetchall()
     except sqlite3.Error as err:
         print("Database error:", err)
@@ -306,7 +306,7 @@ def get_ordered_swimmers(id_prueba):
         con.close()
     return rows
 
-def get_ordered_swimmers_rec(id_prueba, id_categoria, sexo):
+def get_ordered_swimmers_rec(id_prueba):
     """Get all sorted swimmers for a specific event"""
     try:
         con = connect_db()
@@ -317,9 +317,9 @@ def get_ordered_swimmers_rec(id_prueba, id_categoria, sexo):
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n on n.Id = np.IdNadador
                         INNER JOIN Clubes c ON n.IdClub = c.Id
-                        WHERE np.IdPrueba = ? and n.IdCategoria = ? and n.Sexo = ?
+                        WHERE np.IdPrueba = ? 
                         ORDER BY np.PiletaRec DESC
-                    """, (id_prueba, id_categoria, sexo))
+                    """, (id_prueba, ))
         rows = cur.fetchall()
     except sqlite3.Error as err:
         print("Database error:", err)

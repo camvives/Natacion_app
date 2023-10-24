@@ -27,7 +27,6 @@ from database import (
     update_nadador_pruebas,
     get_ordered_swimmers,
     get_one_prueba,
-    get_one_categoria,
     get_nadadores_prueba_rec,
     update_nadador_pruebas_rec,
     get_ordered_swimmers_rec,
@@ -180,15 +179,15 @@ def ordercomp(id_prueba):
 
     return viewordercomp(id_prueba)
 
-@app.route('/orderrec/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
-def orderrec(id_prueba, id_categoria, sexo):
+@app.route('/orderrec/<int:id_prueba>', methods=['POST'])
+def orderrec(id_prueba):
     """Asign randomly a pool number and a lane number for each swimmer in an event"""
-    nadadores_prueba = list(get_nadadores_prueba_rec(id_prueba, id_categoria, sexo))
+    nadadores_prueba = list(get_nadadores_prueba_rec(id_prueba))
     nadadores_ordenados = order_swimmers_comp(nadadores_prueba)
 
     update_nadador_pruebas_rec(nadadores_ordenados)
 
-    return vieworderrec(id_prueba, id_categoria, sexo)
+    return vieworderrec(id_prueba)
 
 @app.route('/viewordercomp/<int:id_prueba>', methods=['POST'])
 def viewordercomp(id_prueba):
@@ -202,17 +201,16 @@ def viewordercomp(id_prueba):
                            prueba=prueba,
                            tipo='Competitivo')
 
-@app.route('/vieworderrec/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
-def vieworderrec(id_prueba, id_categoria, sexo):
+@app.route('/vieworderrec/<int:id_prueba>', methods=['POST'])
+def vieworderrec(id_prueba):
     """Show list of pools and lanes for an event"""
 
-    nadadores_prueba = list(get_ordered_swimmers_rec(id_prueba, id_categoria, sexo))
+    nadadores_prueba = list(get_ordered_swimmers_rec(id_prueba))
     piletas = order_pools(nadadores_prueba)
     prueba = get_one_prueba(id_prueba)
-    categoria = get_one_categoria(id_categoria)
 
     return render_template("piletas_pruebas.html", piletas=piletas,
-                           prueba=prueba, categoria=categoria, sexo=sexo,
+                           prueba=prueba,
                            tipo='Recreativo')
 
 @app.route('/cargatime/<int:id_prueba>', methods=['POST'])
