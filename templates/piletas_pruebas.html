@@ -41,8 +41,6 @@ Orden {{tipo}}
                                                 <td>
                                                     <form action="{{ url_for('insert_nad_time') }}" method="POST">
                                                         <input type="hidden" name="prueba" value="{{ prueba.id_prueba }}">
-                                                        <input type="hidden" name="categoria" value="{{ categoria.id_categoria }}">
-                                                        <input type="hidden" name="sexo" value="{{ sexo }}">
                                                         <input type="hidden" name="nadador" value="{{ nadador['IdNadador'] }}">
                                                         <input type="text" name="tiempo_mm" placeholder="mm" style="width: 7vh;" required>
                                                         <input type="text" name="tiempo_ss" placeholder="ss" style="width: 7vh;" required>
@@ -59,8 +57,6 @@ Orden {{tipo}}
                                                 <td>
                                                     <form action="{{ url_for('del_nad_time') }}" method="POST">
                                                         <input type="hidden" name="prueba" value="{{ prueba.id_prueba }}">
-                                                        <input type="hidden" name="categoria" value="{{ categoria.id_categoria }}">
-                                                        <input type="hidden" name="sexo" value="{{ sexo }}">
                                                         <input type="hidden" name="nadador" value="{{ nadador['IdNadador'] }}">
                                                         <button type="submit" class="btn btn-danger btn-sm">
                                                             <i class="fa fa-times" title="Eliminar tiempo"></i>

@@ -231,8 +231,6 @@ def cargatime(id_prueba):
 def insert_nad_time():
     """Insert the competitive time for a swimmer in an event"""
     id_prueba = request.form.get('prueba')
-    id_categoria = request.form.get('categoria')
-    sexo = request.form.get('sexo')
     id_nadador = request.form.get('nadador')
     tiempo_mm = request.form.get('tiempo_mm')
     tiempo_ss = request.form.get('tiempo_ss')
@@ -246,8 +244,6 @@ def insert_nad_time():
 def del_nad_time():
     """Insert the competitive time for a swimmer in an event"""
     id_prueba = request.form.get('prueba')
-    id_categoria = request.form.get('categoria')
-    sexo = request.form.get('sexo')
     id_nadador = request.form.get('nadador')
 
     print(id_prueba, id_nadador)
@@ -261,27 +257,25 @@ def results():
 
     return render_template("resultados.html", pruebas=pruebas)
 
-@app.route('/results/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
-def result_event(id_prueba, id_categoria, sexo):
+@app.route('/results/<int:id_prueba>', methods=['POST'])
+def result_event(id_prueba):
     """Show swimmers rank based on event time"""
 
-    nadadores_ranked = get_ranked_swimmers(id_prueba, id_categoria, sexo)
+    nadadores_ranked = get_ranked_swimmers(id_prueba)
     prueba = get_one_prueba(id_prueba)
-    categoria = get_one_categoria(id_categoria)
 
     return render_template("ranking.html", nadadores=nadadores_ranked,
-                           prueba=prueba, categoria=categoria, sexo=sexo)
+                           prueba=prueba)
 
-@app.route('/result_event_top/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
-def result_event_top(id_prueba, id_categoria, sexo):
+@app.route('/result_event_top/<int:id_prueba>', methods=['POST'])
+def result_event_top(id_prueba):
     """Show swimmers rank based on event time"""
 
-    nadadores_ranked = get_top_3_swimmers(id_prueba, id_categoria, sexo)
+    nadadores_ranked = get_top_3_swimmers(id_prueba)
     prueba = get_one_prueba(id_prueba)
-    categoria = get_one_categoria(id_categoria)
 
     return render_template("podio.html", nadadores=nadadores_ranked,
-                           prueba=prueba, categoria=categoria, sexo=sexo)
+                           prueba=prueba)
 
 @app.route('/pruebas')
 def list_pruebas():

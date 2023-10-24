@@ -1,0 +1,8 @@
+
+*.toc
+__pycache__/create_table.cpython-310.pyc
+*.spec
+*.pyc
+/dist
+/build
+*.pyc

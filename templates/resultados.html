@@ -9,9 +9,7 @@ Resultados
         <table id="example" class="display" style="width:100%;">
             <thead>
                 <tr>
-                    <th>Prueba</th>
-                    <th>Categoria</th>
-                    <th>Sexo</th>
+                    <th style="width: 50vw;">Prueba</th>
                     <th>Inscriptos</th>
                     <th>Acciones</th>
                 </tr>
@@ -20,12 +18,10 @@ Resultados
                 {% for prueba in pruebas %}
                 <tr>
                     <td>{{ prueba['Prueba'] }}</td>
-                    <td>{{ prueba['Categoria'] }}</td>
-                    <td>{{ prueba['Sexo'] }}</td>
                     <td>{{ prueba['NumeroNadadores'] }}</td>
                     <td>           
                 
-                        <form action="{{ url_for('result_event', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                        <form action="{{ url_for('result_event', id_prueba=prueba['IdPrueba']) }}" method="POST" style="display: inline; padding-right: 10px;">
                             <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
                             <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
                             <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">
@@ -33,7 +29,7 @@ Resultados
                                 <i class="fa fa-list-ol" aria-hidden="true" title="Ver ranking"></i>
                             </button>
                         </form>
-                        <form action="{{ url_for('result_event_top', id_prueba=prueba['IdPrueba'], id_categoria=prueba['IdCategoria'], sexo=prueba['Sexo']) }}" method="POST" style="display: inline; padding-right: 10px;">
+                        <form action="{{ url_for('result_event_top', id_prueba=prueba['IdPrueba']) }}" method="POST" style="display: inline; padding-right: 10px;">
                             <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
                             <input type="hidden" name="categoria" value="{{ prueba['IdCategoria'] }}">
                             <input type="hidden" name="sexo" value="{{ prueba['Sexo'] }}">

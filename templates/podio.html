@@ -74,26 +74,26 @@
     <div style="text-align: center;">
         <h2 class="mb-2 mt-4 ">
             <span class="rounded-text">{{ prueba.descripcion }}</span>
-            ~
-            <span class="rounded-text">Categoría: {{ categoria.descripcion }}</span>
-            ~
-            <span class="rounded-text">{{ sexo }}</span>
         </h2>
         <div class="first">
             <h3>{{nadadores[0]['NombreApellido']}}</h3>
             <h4>{{nadadores[0]['Club']}}</h4>
             <h4>{{nadadores[0]['TiempoCompeticion']}}</h4>
         </div>
+        {% if nadadores[1] != null %}
         <div class="second">
             <h3>{{nadadores[1]['NombreApellido']}}</h3>
             <h4>{{nadadores[1]['Club']}}</h4>
             <h4>{{nadadores[1]['TiempoCompeticion']}}</h4>
         </div>
+        {% endif %}
+        {% if nadadores[2] != null %}
         <div class="third">
             <h3>{{nadadores[2]['NombreApellido']}}</h3>
             <h4>{{nadadores[2]['Club']}}</h4>
             <h4>{{nadadores[2]['TiempoCompeticion']}}</h4>
         </div>
+        {% endif %}
         <form action="{{ url_for('results') }}" method="GET" style="display: inline; padding-right: 10px; text-align: center;">
             <button type="submit" style="background: none; border: none; cursor: pointer;">
                 <i class="fas fa-arrow-left"></i> 

@@ -32,7 +32,7 @@ def get_pruebas():
     con = connect_db()
     con.row_factory = sqlite3.Row
     cur = con.cursor()
-    cur.execute("SELECT * FROM Pruebas")
+    cur.execute("SELECT * FROM Pruebas ")
     pruebas = cur.fetchall()
     con.close()
     return pruebas
@@ -196,15 +196,11 @@ def get_all_pruebas_grouped():
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("""SELECT p.IdPrueba, c.Id as IdCategoria, p.descripcion as Prueba,
-                    c.descripcion as Categoria, s.Sexo,
-                    COUNT(n.Id) as NumeroNadadores
-                    FROM Pruebas p
-                    CROSS JOIN Categorias c
-                    CROSS JOIN (SELECT 'Femenino' AS Sexo UNION SELECT 'Masculino') AS s
-                    INNER JOIN Nadadores n ON c.Id = n.IdCategoria AND s.Sexo = n.Sexo
-                    INNER JOIN Nadadores_Pruebas np ON n.Id = np.IdNadador AND np.IdPrueba = p.IdPrueba
-                    GROUP BY p.IdPrueba, c.Id, p.descripcion, c.descripcion, s.Sexo
+        cur.execute("""SELECT p.IdPrueba, p.descripcion as Prueba, 
+                        count(*) AS NumeroNadadores, np.Orden
+                        FROM Pruebas p
+                        INNER JOIN Nadadores_Pruebas np on p.IdPrueba = np.IdPrueba
+                        GROUP BY p.IdPrueba
                     ORDER BY NumeroNadadores DESC;
                     """)
         rows = cur.fetchall()
@@ -215,7 +211,7 @@ def get_all_pruebas_grouped():
         con.close()
     return rows
 
-def get_nadadores_prueba(id_prueba, id_categoria, sexo):
+def get_nadadores_prueba(id_prueba):
     """Get all swimmers for a specific event"""
     try:
         con = connect_db()
@@ -225,9 +221,9 @@ def get_nadadores_prueba(id_prueba, id_categoria, sexo):
                         np.Pileta, np.Orden
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n on n.Id = np.IdNadador
-                        WHERE IdPrueba = ? and IdCategoria = ? and Sexo = ?
+                        WHERE IdPrueba = ?
                         ORDER BY np.TiempoPreInscripcion
-                    """, (id_prueba, id_categoria, sexo))
+                    """, (id_prueba,))
         rows = cur.fetchall()
     except sqlite3.Error as err:
         print("Database error:", err)
@@ -287,19 +283,21 @@ def update_nadador_pruebas_rec(nadador_pruebas):
     finally:
         con.close()
 
-def get_ordered_swimmers(id_prueba, id_categoria, sexo):
+def get_ordered_swimmers(id_prueba):
     """Get all sorted swimmers for a specific event"""
     try:
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
         cur.execute("""SELECT np.IdNadador, np.TiempoCompeticion, n.NombreApellido,
+                        c.descripcion as Club,
                         np.TiempoPreInscripcion, np.Pileta, np.Orden
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n on n.Id = np.IdNadador
-                        WHERE np.IdPrueba = ? and n.IdCategoria = ? and n.Sexo = ?
+                        INNER JOIN Clubes c ON n.IdClub = c.Id
+                        WHERE np.IdPrueba = ?
                         ORDER BY np.Pileta DESC
-                    """, (id_prueba, id_categoria, sexo))
+                    """, (id_prueba, ))
         rows = cur.fetchall()
     except sqlite3.Error as err:
         print("Database error:", err)
@@ -314,10 +312,11 @@ def get_ordered_swimmers_rec(id_prueba, id_categoria, sexo):
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("""SELECT n.NombreApellido, np.TiempoPreInscripcion,
+        cur.execute("""SELECT n.NombreApellido, np.TiempoPreInscripcion, c.descripcion as Club,
                         np.PiletaRec, np.OrdenRec as Orden
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n on n.Id = np.IdNadador
+                        INNER JOIN Clubes c ON n.IdClub = c.Id
                         WHERE np.IdPrueba = ? and n.IdCategoria = ? and n.Sexo = ?
                         ORDER BY np.PiletaRec DESC
                     """, (id_prueba, id_categoria, sexo))
@@ -401,7 +400,7 @@ def del_comp_time(id_prueba, id_nadador):
     finally:
         con.close()
 
-def get_ranked_swimmers(id_prueba, id_categoria, sexo):
+def get_ranked_swimmers(id_prueba):
     """Get all ranked swimmers for a specific event based on cometition time"""
     try:
         con = connect_db()
@@ -411,14 +410,14 @@ def get_ranked_swimmers(id_prueba, id_categoria, sexo):
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n ON n.Id = np.IdNadador
                         INNER JOIN Clubes c ON n.IdClub = c.Id
-                        WHERE np.IdPrueba = ? AND n.IdCategoria = ? AND n.Sexo = ?
+                        WHERE np.IdPrueba = ? 
                         ORDER BY
                         CASE
                             WHEN np.TiempoCompeticion IS NULL THEN 1
                             ELSE 0
                         END,
                         np.TiempoCompeticion ASC;
-                    """, (id_prueba, id_categoria, sexo))
+                    """, (id_prueba,))
         rows = cur.fetchall()
     except sqlite3.Error as err:
         print("Database error:", err)
@@ -427,7 +426,7 @@ def get_ranked_swimmers(id_prueba, id_categoria, sexo):
         con.close()
     return rows
 
-def get_top_3_swimmers(id_prueba, id_categoria, sexo):
+def get_top_3_swimmers(id_prueba):
     """Get TOP 3 swimmers for a specific event based on cometition time"""
     try:
         con = connect_db()
@@ -437,7 +436,7 @@ def get_top_3_swimmers(id_prueba, id_categoria, sexo):
                         FROM Nadadores_Pruebas np
                         INNER JOIN Nadadores n ON n.Id = np.IdNadador
                         INNER JOIN Clubes c ON n.IdClub = c.Id
-                        WHERE np.IdPrueba = ? AND n.IdCategoria = ? AND n.Sexo = ?
+                        WHERE np.IdPrueba = ? 
                         ORDER BY
                         CASE
                             WHEN np.TiempoCompeticion IS NULL THEN 1
@@ -445,7 +444,7 @@ def get_top_3_swimmers(id_prueba, id_categoria, sexo):
                         END,
                         np.TiempoCompeticion ASC
 						LIMIT 3;
-                    """, (id_prueba, id_categoria, sexo))
+                    """, (id_prueba,))
         rows = cur.fetchall()
     except sqlite3.Error as err:
         print("Database error:", err)
@@ -460,7 +459,8 @@ def get_pruebas_info():
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("""SELECT * FROM pruebas""")
+        cur.execute("""SELECT * FROM pruebas 
+                    ORDER BY IdPrueba DESC""")
         rows = cur.fetchall()
         pruebas_list = []
         for row in rows:
@@ -505,7 +505,6 @@ def del_prueba(id_prueba):
 
 def insert_prueba(prueba):
     """Adds new event to database"""
-    print(prueba.descripcion)
     try:
         with connect_db() as con:
             cur = con.cursor()
