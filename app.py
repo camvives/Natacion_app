@@ -1,8 +1,8 @@
 """Flask routes to run application"""
 import sqlite3
-import create_table
-import webview
 from flask import Flask, render_template, request, redirect, url_for
+import webview
+import create_table
 from models import Nadador, NadadorPrueba, Prueba, Categoria, Club
 from utils import (
     convert_timestamp,
@@ -169,15 +169,16 @@ def orden_recreativo():
 
     return render_template("recreativo.html", pruebas=pruebas)
 
-@app.route('/ordercomp/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
-def ordercomp(id_prueba, id_categoria, sexo):
+@app.route('/ordercomp/<int:id_prueba>', methods=['POST'])
+def ordercomp(id_prueba):
     """Asign a pool number and a lane number for each swimmer in an event"""
-    nadadores_prueba = list(get_nadadores_prueba(id_prueba, id_categoria, sexo))
+    nadadores_prueba = list(get_nadadores_prueba(id_prueba))
     nadadores_ordenados = order_swimmers_comp(nadadores_prueba)
 
     update_nadador_pruebas(nadadores_ordenados)
+    print(id_prueba)
 
-    return viewordercomp(id_prueba, id_categoria, sexo)
+    return viewordercomp(id_prueba)
 
 @app.route('/orderrec/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
 def orderrec(id_prueba, id_categoria, sexo):
@@ -189,17 +190,16 @@ def orderrec(id_prueba, id_categoria, sexo):
 
     return vieworderrec(id_prueba, id_categoria, sexo)
 
-@app.route('/viewordercomp/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
-def viewordercomp(id_prueba, id_categoria, sexo):
+@app.route('/viewordercomp/<int:id_prueba>', methods=['POST'])
+def viewordercomp(id_prueba):
     """Show list of pools and lanes for an event"""
 
-    nadadores_prueba = list(get_ordered_swimmers(id_prueba, id_categoria, sexo))
+    nadadores_prueba = list(get_ordered_swimmers(id_prueba))
     piletas = order_pools(nadadores_prueba)
     prueba = get_one_prueba(id_prueba)
-    categoria = get_one_categoria(id_categoria)
 
     return render_template("piletas_pruebas.html", piletas=piletas,
-                           prueba=prueba, categoria=categoria, sexo=sexo,
+                           prueba=prueba,
                            tipo='Competitivo')
 
 @app.route('/vieworderrec/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
@@ -215,17 +215,16 @@ def vieworderrec(id_prueba, id_categoria, sexo):
                            prueba=prueba, categoria=categoria, sexo=sexo,
                            tipo='Recreativo')
 
-@app.route('/cargatime/<int:id_prueba>/<int:id_categoria>/<string:sexo>', methods=['POST'])
-def cargatime(id_prueba, id_categoria, sexo):
+@app.route('/cargatime/<int:id_prueba>', methods=['POST'])
+def cargatime(id_prueba):
     """Show list of pools and lanes for an event and let the user upload times"""
 
-    nadadores_prueba = list(get_ordered_swimmers(id_prueba, id_categoria, sexo))
+    nadadores_prueba = list(get_ordered_swimmers(id_prueba))
     piletas = order_pools(nadadores_prueba)
     prueba = get_one_prueba(id_prueba)
-    categoria = get_one_categoria(id_categoria)
 
     return render_template("piletas_pruebas.html", piletas=piletas,
-                           prueba=prueba, categoria=categoria, sexo=sexo,
+                           prueba=prueba,
                            tipo='Carga Tiempos')
 
 @app.route('/insertNadTime', methods=['POST'])
@@ -241,7 +240,7 @@ def insert_nad_time():
     tiempo = convert_one_timestamp(tiempo_mm, tiempo_ss, tiempo_sss)
 
     insert_comp_time(id_prueba, id_nadador, tiempo)
-    return cargatime(id_prueba, id_categoria, sexo)
+    return cargatime(id_prueba)
 
 @app.route('/delNadTime', methods=['POST'])
 def del_nad_time():
@@ -253,7 +252,7 @@ def del_nad_time():
 
     print(id_prueba, id_nadador)
     del_comp_time(id_prueba, id_nadador)
-    return cargatime(id_prueba, id_categoria, sexo)
+    return cargatime(id_prueba)
 
 @app.route('/results', methods=['GET'])
 def results():
@@ -378,7 +377,6 @@ def add_club():
     insert_club(club)
 
     return list_clubes()
-
 
 
 if __name__ == "__main__":

@@ -6,10 +6,10 @@ Nuevo Nadador
 <section>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-12">
+            <div class="col">
                 <form action="{{ url_for('addrec') }}" method="POST">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <h2 class="mt-5 mb-4 title-background ">Registrar un nuevo nadador</h2>
                             <div class="form-group row mt-3">
                                 <label for="inputName" class="col-sm-4 col-form-label text-white" style="font-size: 18px;">Nombre y Apellido</label>
@@ -59,37 +59,38 @@ Nuevo Nadador
                                 </div>
                             </div>
                         </div>
-                        <div class="col border-left">
+                        <div class="col-sm-1 border-left">
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-sm-6">
                             <h3 class="mt-5 mb-4 title-background ">Pruebas</h3>
                             <div class="form-group row mt-1">
                                 <form>
                                     <div id="form-container">
                                         <!-- Initial row -->
                                         <div class="form-group row">
-                                            <div class="col-sm-5 mt-3">
-                                                <select id="inputPrueba" class="form-control form-control-sm" name="prueba[]" required>
+                                            <div class="col-sm-6 mt-3">
+                                                <select id="inputPrueba" class="mr-n3 form-control form-control-sm" name="prueba[]" required>
                                                     <option value="" selected disabled>Seleccionar</option>
                                                     {% for prueba in pruebas %}
                                                     <option value="{{ prueba.IdPrueba }}">{{ prueba.descripcion }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
-                                            <div class="col-sm-2 mt-3">
-                                                <input type="number" min="0" class="form-control form-control-sm" placeholder="mm" name="mm[]">
+                                            <div class="mt-3"  style="padding-right: 0px; padding-left: 0px; width:5vw;">
+                                                <input type="number"  min="0" class="form-control form-control-sm" placeholder="mm" name="mm[]">
                                             </div>
-                                            <div class="col-sm-2 mt-3">
-                                                <input type="number" min="0" class="form-control form-control-sm" placeholder="ss" name="ss[]">
+                                            <div class="mt-3" style="padding-right: 0px; padding-left: 0px; width:5vw;">
+                                                <input type="number"  min="0" class="form-control form-control-sm" placeholder="ss" name="ss[]">
                                             </div>
-                                            <div class="col-sm-2 mt-3">
-                                                <input type="number" min="0" class="form-control form-control-sm" placeholder="sss"  name="sss[]">
+                                            <div class=" mt-3" style="padding-right: 0px; padding-left: 0px; width:5vw;">
+                                                <input type="number" min="0" class="form-control form-control-sm" placeholder="sss" name="sss[]">
                                             </div>
                                             <div class="col-sm-1 mt-3">
                                                 <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">X</button>
                                             </div>
                                         </div>
                                     </div>
+                                    
                         
                                     <div class="form-group row">
                                         <div class="col-sm-10 mt-3">

@@ -11,26 +11,25 @@ Orden {{tipo}}
                 {% endif %}
                 <span>{{ tipo }}</span>:
                 <span>{{ prueba.descripcion }}</span>
-                ~
-                <span>Categoría: {{ categoria.descripcion }}</span>
-                ~
-                <span>{{ sexo }}</span>
             </h2>
             <div class="col-8 mt-3">
                 <table class="table table-bordered text-center table-striped table-sm">
                     {% for pileta in piletas %}
                         <tr>
                             <th colspan="7" style="background-color: #ccc;">
-                                Pileta {{ loop.index }}
+                                Serie {{ loop.index }}
                             </th>
                         </tr>
                         {% for i in range(1, 7) %}
                             <tr>
-                                <td>{{ i }}</td>
+                                <td>Andarivel {{ i }}</td>
                                 {% for nadador in pileta %}
                                     {% if nadador['Orden'] == i %}
                                         <td>
                                             {{ nadador['NombreApellido'] }}
+                                        </td>
+                                        <td>
+                                            {{ nadador['Club'] }}
                                         </td>
                                         {% if tipo != 'Recreativo' %}
                                         <td>

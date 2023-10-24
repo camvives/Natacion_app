@@ -8,13 +8,9 @@ Lista Nadadores
 <section>
     <div class="container mt-3">
         <h2>Tabla de Nadadores Registrados</h2>
-        <p>Escribí algo en la barra de búsqueda para filtrar por nombre o apellido:</p>
-        <input class="form-control" id="myInput" type="text" placeholder="Buscar...">
-        <br>
         <!-- Wrap the table in a div with a class for scrolling -->
-        <div class="table-wrapper-scroll-y">
-            <table class="table table-bordered table-striped">
-                <thead>
+        <table id="example" class="display" style="width:100%;">
+            <thead>
                     <tr>
                         <th>Nombre y Apellido</th>
                         <th>Sexo</th>
@@ -74,7 +70,6 @@ Lista Nadadores
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
     </div>
 
     <div class='air air1'></div>
@@ -85,12 +80,36 @@ Lista Nadadores
 
 <script>
     $(document).ready(function(){
-        $("#myInput").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#myTable tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
+        var table = $('#example').DataTable();
+
+        // Agregar un input de filtro para cada columna excepto la última
+        $('#example thead th').each(function (index) {
+            if (index < $('#example thead th').length - 1) {
+                var title = $(this).text();
+                $(this).html('<input type="text" placeholder="Filtrar ' + title + '" />');
+            }
         });
+
+        // Aplicar el filtro a cada columna excepto la última
+        table.columns().every(function (index) {
+            if (index < table.columns().header().length - 1) {
+                var that = this;
+
+                $('input', this.header()).on('keyup change', function () {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            }
+        });
+
+        var maxRows = 6; // Maximum number of rows to display
+        var table = $('#example').DataTable(); // Initialize DataTable
+
+        // Show only the first 'maxRows' rows
+        table.page.len(maxRows).draw();
 
 
         // Click event for the delete buttons

@@ -59,6 +59,15 @@
             padding: 10px 20px;
             border-radius: 20px; 
         }
+        .logo {
+            position: absolute;
+            width: 11vw;
+            height: auto;
+            top: 85vh;
+            left: 51vw;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -71,18 +80,18 @@
             <span class="rounded-text">{{ sexo }}</span>
         </h2>
         <div class="first">
-            <h2>{{nadadores[0]['NombreApellido']}}</h2>
-            <h3>{{nadadores[0]['Club']}}</h3>
+            <h3>{{nadadores[0]['NombreApellido']}}</h3>
+            <h4>{{nadadores[0]['Club']}}</h4>
             <h4>{{nadadores[0]['TiempoCompeticion']}}</h4>
         </div>
         <div class="second">
-            <h2>{{nadadores[1]['NombreApellido']}}</h2>
-            <h3>{{nadadores[1]['Club']}}</h3>
+            <h3>{{nadadores[1]['NombreApellido']}}</h3>
+            <h4>{{nadadores[1]['Club']}}</h4>
             <h4>{{nadadores[1]['TiempoCompeticion']}}</h4>
         </div>
         <div class="third">
-            <h2>{{nadadores[2]['NombreApellido']}}</h2>
-            <h3>{{nadadores[2]['Club']}}</h3>
+            <h3>{{nadadores[2]['NombreApellido']}}</h3>
+            <h4>{{nadadores[2]['Club']}}</h4>
             <h4>{{nadadores[2]['TiempoCompeticion']}}</h4>
         </div>
         <form action="{{ url_for('results') }}" method="GET" style="display: inline; padding-right: 10px; text-align: center;">
@@ -90,7 +99,7 @@
                 <i class="fas fa-arrow-left"></i> 
             </button>
         </form>
-        
+        <img src="/static/logo.png" class="logo">
     
         <img src="/static/podio.gif" alt="Podio Image">
     </div>
