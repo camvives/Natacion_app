@@ -1,6 +1,8 @@
 """Flask routes to run application"""
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 import webview
 import create_table
 from models import Nadador, NadadorPrueba, Prueba, Categoria, Club
@@ -44,7 +46,8 @@ from database import (
     update_club,
     insert_club,
     del_club,
-    get_top_3_swimmers
+    get_top_3_swimmers,
+    get_club_swimmers_info
 )
 
 app = Flask(__name__)
@@ -369,6 +372,36 @@ def add_club():
     insert_club(club)
 
     return list_clubes()
+
+@app.route('/cancheo')
+def cancheo():
+    """Generate a series of PDF files containing competition information for each club"""
+    clubes = get_clubes_info()
+
+    for club in clubes:
+        nadadores = get_club_swimmers_info(club.id_club)
+        c = canvas.Canvas(f"PDFs/{club.descripcion}.pdf", pagesize=A4)
+        c.setFont("Helvetica", 30)
+        c.drawString(50, 750, f"{club.descripcion}")
+        c.setFont("Helvetica", 14)
+        c.drawString(50, 720, "Nombre y Apellido")
+        c.drawString(200, 720, "Prueba")
+        c.drawString(450, 720, "Serie")
+        c.drawString(500, 720, "Andarivel")
+        c.line(40, 715, 570, 715)
+        c.setFont("Helvetica", 10)
+        index = 700
+        for nadador in nadadores:
+            c.line(40, index-7, 570, index-7)
+            c.drawString(50, index, f"{nadador[0]}")
+            c.drawString(200, index, f"{nadador[1]}")
+            c.drawString(460, index, f"{nadador[2]}")
+            c.drawString(530, index, f"{nadador[3]}")
+            index -= 20
+
+        c.save()
+
+    return home()
 
 
 if __name__ == "__main__":

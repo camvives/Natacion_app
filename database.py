@@ -645,3 +645,26 @@ def insert_club(club):
             print("Registro añadido a la base de datos")
     except sqlite3.Error as err:
         print(f"Error en el INSERT: {str(err)}")
+
+def get_club_swimmers_info(id_club):
+    """Get all the swimmers and events where registered for a club"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT n.NombreApellido, p.descripcion as 'Prueba',
+                        np.Pileta as 'Serie', np.Orden as 'Andarivel'
+                        FROM Nadadores n
+                        INNER JOIN Nadadores_Pruebas np on n.Id = np.IdNadador
+                        INNER JOIN Pruebas p on p.IdPrueba = np.IdPrueba 
+                        WHERE n.Idclub = ?
+                        ORDER BY p.descripcion
+                    """, (id_club,))
+        rows = cur.fetchall()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        rows = []
+    finally:
+        con.close()
+    return rows
+
