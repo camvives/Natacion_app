@@ -196,8 +196,9 @@ def get_all_pruebas_grouped():
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("""SELECT p.IdPrueba, p.descripcion as Prueba, 
-                        count(*) AS NumeroNadadores, np.Orden, np.OrdenRec
+        cur.execute("""SELECT p.IdPrueba, p.descripcion as Prueba,
+                        count(*) AS NumeroNadadores, count(np.Orden) as Orden, 
+                        count(np.OrdenRec) as OrdenRec
                         FROM Pruebas p
                         INNER JOIN Nadadores_Pruebas np on p.IdPrueba = np.IdPrueba
                         GROUP BY p.IdPrueba
@@ -253,14 +254,14 @@ def get_nadadores_prueba_rec(id_prueba):
         con.close()
     return rows
 
-def update_nadador_pruebas(nadador_pruebas):
+def update_nadador_pruebas(nadador_pruebas, id_prueba):
     """Update pool and order values for nadador_pruebas rows"""
     try:
         con = connect_db()
         for row in nadador_pruebas:
             con.execute("""UPDATE Nadadores_Pruebas SET Orden = ?, Pileta = ?
-                        WHERE IdNadador = ?""",
-                        (row[-1], row[-2], row[0]))
+                        WHERE IdNadador = ? and IdPrueba = ?""",
+                        (row[-1], row[-2], row[0], id_prueba))
         con.commit()
     except sqlite3.Error as err:
         print("Database error:", err)
@@ -268,14 +269,14 @@ def update_nadador_pruebas(nadador_pruebas):
     finally:
         con.close()
 
-def update_nadador_pruebas_rec(nadador_pruebas):
+def update_nadador_pruebas_rec(nadador_pruebas, id_prueba):
     """Update pool and order values for nadador_pruebas rows"""
     try:
         con = connect_db()
         for row in nadador_pruebas:
             con.execute("""UPDATE Nadadores_Pruebas SET OrdenRec = ?, PiletaRec = ?
-                        WHERE IdNadador = ?""",
-                        (row[-1], row[-2], row[0]))
+                        WHERE IdNadador = ? and IdPrueba = ?""",
+                        (row[-1], row[-2], row[0], id_prueba))
         con.commit()
     except sqlite3.Error as err:
         print("Database error:", err)
@@ -459,7 +460,7 @@ def get_pruebas_info():
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("""SELECT * FROM pruebas 
+        cur.execute("""SELECT * FROM pruebas
                     ORDER BY IdPrueba DESC""")
         rows = cur.fetchall()
         pruebas_list = []
@@ -652,13 +653,14 @@ def get_club_swimmers_info(id_club):
         con = connect_db()
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("""SELECT n.NombreApellido, p.descripcion as 'Prueba',
+        cur.execute("""SELECT  p.IdPrueba,
+                        n.NombreApellido, p.descripcion as 'Prueba',
                         np.Pileta as 'Serie', np.Orden as 'Andarivel'
                         FROM Nadadores n
                         INNER JOIN Nadadores_Pruebas np on n.Id = np.IdNadador
                         INNER JOIN Pruebas p on p.IdPrueba = np.IdPrueba 
                         WHERE n.Idclub = ?
-                        ORDER BY p.descripcion
+                        ORDER BY p.IdPrueba, n.NombreApellido
                     """, (id_club,))
         rows = cur.fetchall()
     except sqlite3.Error as err:
@@ -667,4 +669,3 @@ def get_club_swimmers_info(id_club):
     finally:
         con.close()
     return rows
-

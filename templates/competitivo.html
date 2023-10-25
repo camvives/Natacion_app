@@ -21,7 +21,7 @@ Orden Competitivo
                     <td>{{ prueba['NumeroNadadores'] }}</td>
                     <td>                     
 
-                            {% if prueba['Orden'] != None %}
+                            {% if prueba['Orden'] == prueba['NumeroNadadores'] %}
                             <form action="{{ url_for('viewordercomp', id_prueba=prueba['IdPrueba']) }}" method="POST" style="display: inline; padding-right: 10px;">
                                 <input type="hidden" name="id" value="{{ prueba['IdPrueba'] }}">
                                 

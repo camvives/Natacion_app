@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}
+Transaction Result
+{% endblock %}
+{% block content %}
+<section>
+        <div class="modal" tabindex="-1" role="dialog" id="myModal">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cancheo generado 😎</h5>
+                        </div>
+                        <div class="modal-body">
+                            <p>Podés encontrar los archivos de cada club en la carpeta 'PDFs'</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success"  onclick="window.location.href='/'">Listo!</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class='air air1'></div>
+        <div class='air air2'></div>
+</section>
+<script>
+        $(document).ready(function(){
+            $("#myModal").modal('show');
+        });
+    </script>
+{% endblock %}

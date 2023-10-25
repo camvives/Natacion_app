@@ -1,5 +1,6 @@
 """Flask routes to run application"""
 import sqlite3
+import os
 from flask import Flask, render_template, request, redirect, url_for
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -177,8 +178,7 @@ def ordercomp(id_prueba):
     nadadores_prueba = list(get_nadadores_prueba(id_prueba))
     nadadores_ordenados = order_swimmers_comp(nadadores_prueba)
 
-    update_nadador_pruebas(nadadores_ordenados)
-    print(id_prueba)
+    update_nadador_pruebas(nadadores_ordenados, id_prueba)
 
     return viewordercomp(id_prueba)
 
@@ -188,7 +188,7 @@ def orderrec(id_prueba):
     nadadores_prueba = list(get_nadadores_prueba_rec(id_prueba))
     nadadores_ordenados = order_swimmers_comp(nadadores_prueba)
 
-    update_nadador_pruebas_rec(nadadores_ordenados)
+    update_nadador_pruebas_rec(nadadores_ordenados, id_prueba)
 
     return vieworderrec(id_prueba)
 
@@ -381,30 +381,33 @@ def cancheo():
     for club in clubes:
         nadadores = get_club_swimmers_info(club.id_club)
         c = canvas.Canvas(f"PDFs/{club.descripcion}.pdf", pagesize=A4)
-        c.setFont("Helvetica", 30)
+        c.setFont("Helvetica", 24)
         c.drawString(50, 750, f"{club.descripcion}")
         c.setFont("Helvetica", 14)
         c.drawString(50, 720, "Nombre y Apellido")
-        c.drawString(200, 720, "Prueba")
+        c.drawString(195, 720, "Nro")
+        c.drawString(230, 720, "Prueba")
         c.drawString(450, 720, "Serie")
         c.drawString(500, 720, "Andarivel")
         c.line(40, 715, 570, 715)
-        c.setFont("Helvetica", 10)
+        c.setFont("Helvetica", 9)
         index = 700
         for nadador in nadadores:
-            c.line(40, index-7, 570, index-7)
-            c.drawString(50, index, f"{nadador[0]}")
-            c.drawString(200, index, f"{nadador[1]}")
-            c.drawString(460, index, f"{nadador[2]}")
-            c.drawString(530, index, f"{nadador[3]}")
-            index -= 20
+            c.line(40, index-5, 570, index-5)
+            c.drawString(50, index, f"{nadador[1]}")
+            c.drawString(200, index, f"{nadador[0]}")
+            c.drawString(230, index, f"{nadador[2]}")
+            c.drawString(460, index, f"{nadador[3]}")
+            c.drawString(530, index, f"{nadador[4]}")
+            index -= 15
 
         c.save()
-
-    return home()
+    return render_template("cancheo.html")
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    #app.run(debug=True)
+    if not os.path.exists("PDFs"):
+        os.makedirs("PDFs")
     create_table.create_database_if_not_exists()
-    #webview.start()
+    webview.start()

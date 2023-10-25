@@ -15,12 +15,14 @@ Lista Pruebas
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Descripción</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="myTable">
                     <tr id="new-prueba-row" style="display: none;">
+                        <td></td>
                         <td>
                             <input type="text" class="new-description" style="width: 50vw;">
                         </td>
@@ -39,6 +41,8 @@ Lista Pruebas
                     
                     {% for prueba in rows %}
                     <tr>
+                        <td>
+                            <span class="id">{{ prueba.id_prueba }}</span>                        </td>
                         <td>
                             <span class="description">{{ prueba.descripcion }}</span>
                             <input type="text" class="edit-input" style="display: none; width: 50vw;" value="{{ prueba.descripcion }}">

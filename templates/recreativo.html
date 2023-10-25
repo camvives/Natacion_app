@@ -20,7 +20,7 @@ Orden Recreativo
                     <td>{{ prueba['Prueba'] }}</td>
                     <td>{{ prueba['NumeroNadadores'] }}</td>
                     <td>
-                        {% if prueba['OrdenRec'] == None %}                            
+                        {% if prueba['OrdenRec'] != prueba['NumeroNadadores']  %}                            
                             <button type="button" style="background: none; border: none; padding-right: 10px;" disabled>
                                 <i class="fas fa-eye" title="Ver"></i>
                             </button>
