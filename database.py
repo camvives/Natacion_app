@@ -198,7 +198,7 @@ def get_all_pruebas_grouped():
         cur = con.cursor()
         cur.execute("""SELECT p.IdPrueba, p.descripcion as Prueba,
                         count(*) AS NumeroNadadores, count(np.Orden) as Orden, 
-                        count(np.OrdenRec) as OrdenRec
+                        count(np.OrdenRec) as OrdenRec, p.cantNadadores
                         FROM Pruebas p
                         INNER JOIN Nadadores_Pruebas np on p.IdPrueba = np.IdPrueba
                         GROUP BY p.IdPrueba
@@ -254,6 +254,18 @@ def get_nadadores_prueba_rec(id_prueba):
         con.close()
     return rows
 
+def update_cant_nadadores(id_prueba, cant_nad):
+    """Update the number of swimmers in an event when the order is generated"""
+    try:
+        con = connect_db()
+        con.execute("UPDATE Pruebas SET cantNadadores = ? WHERE IdPrueba = ?", (cant_nad, id_prueba))
+        con.commit()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        con.rollback()
+    finally:
+        con.close()
+
 def update_nadador_pruebas(nadador_pruebas, id_prueba):
     """Update pool and order values for nadador_pruebas rows"""
     try:
@@ -262,6 +274,7 @@ def update_nadador_pruebas(nadador_pruebas, id_prueba):
             con.execute("""UPDATE Nadadores_Pruebas SET Orden = ?, Pileta = ?
                         WHERE IdNadador = ? and IdPrueba = ?""",
                         (row[-1], row[-2], row[0], id_prueba))
+
         con.commit()
     except sqlite3.Error as err:
         print("Database error:", err)

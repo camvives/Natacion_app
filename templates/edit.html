@@ -43,7 +43,7 @@ Editar nadador
                                     <select id="inputCategoria" class="form-control" name="Cat" required>
                                         <option value="" disabled>Seleccionar</option>
                                         {% for categoria in categorias %}
-                                        <option value="{{ categoria.Id }}" {% if categoria.Id == nadador.IdCategoria %}selected{% endif %}>
+                                        <option value="{{ categoria.Id }}" {% if categoria.Id == nadador.id_categoria %}selected{% endif %}>
                                             {{ categoria.descripcion }}
                                         </option>
                                         {% endfor %}

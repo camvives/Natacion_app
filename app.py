@@ -48,7 +48,8 @@ from database import (
     insert_club,
     del_club,
     get_top_3_swimmers,
-    get_club_swimmers_info
+    get_club_swimmers_info,
+    update_cant_nadadores
 )
 
 app = Flask(__name__)
@@ -119,6 +120,7 @@ def edit():
         categorias = get_categorias()
         clubes = get_clubes()
         pruebas = get_pruebas()
+        print(nadador_info.id_categoria)
     except sqlite3.Error as err:
         print("Error:", err)
     return render_template("edit.html", nadador=nadador_info, categorias=categorias,
@@ -172,13 +174,14 @@ def orden_recreativo():
 
     return render_template("recreativo.html", pruebas=pruebas)
 
-@app.route('/ordercomp/<int:id_prueba>', methods=['POST'])
-def ordercomp(id_prueba):
+@app.route('/ordercomp/<int:id_prueba>/<int:cant_nad>', methods=['POST'])
+def ordercomp(id_prueba, cant_nad):
     """Asign a pool number and a lane number for each swimmer in an event"""
     nadadores_prueba = list(get_nadadores_prueba(id_prueba))
     nadadores_ordenados = order_swimmers_comp(nadadores_prueba)
 
     update_nadador_pruebas(nadadores_ordenados, id_prueba)
+    update_cant_nadadores(id_prueba, cant_nad)
 
     return viewordercomp(id_prueba)
 
@@ -406,8 +409,8 @@ def cancheo():
 
 
 if __name__ == "__main__":
-    #app.run(debug=True)
+    app.run(debug=True)
     if not os.path.exists("PDFs"):
         os.makedirs("PDFs")
     create_table.create_database_if_not_exists()
-    webview.start()
+    #webview.start()

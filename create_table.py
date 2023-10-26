@@ -22,9 +22,12 @@ def create_database_if_not_exists():
         """)
 
         conn.execute("""
-            CREATE TABLE Pruebas (
-            IdPrueba INTEGER PRIMARY KEY,
-            descripcion TEXT
+            CREATE TABLE "Pruebas" (
+                "IdPrueba"	INTEGER,
+                "descripcion"	TEXT,
+                "cantNadadores"	INTEGER DEFAULT 0,
+                PRIMARY KEY("IdPrueba")
+            )
         )
         """)
 
