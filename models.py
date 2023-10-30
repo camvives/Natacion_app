@@ -44,10 +44,12 @@ class Prueba:
     Attributes:
         id_prueba (int): The envent's identifier.
         descripcion (str): The event's description.
+        cant_nadadores (int): The number of swimmers participating.
     """
     def __init__(self, descripcion):
         self.id_prueba = None
         self.descripcion = descripcion
+        self.cant_nadadores = None
 
 class Categoria:
     """Represents a category.

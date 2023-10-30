@@ -23,7 +23,7 @@ from database import (
     get_nadador_info,
     get_nadador_pruebas,
     update_nadador_info,
-    delete_and_insert_nadador_pruebas,
+    insert_nadador_pruebas_if_not_exists,
     delete_nadador,
     get_all_pruebas_grouped,
     get_nadadores_prueba,
@@ -144,7 +144,7 @@ def editrec():
         times = convert_timestamp(mm_values, ss_values, sss_values)
 
         update_nadador_info(id_nadador, name, sex, cat, club)
-        delete_and_insert_nadador_pruebas(id_nadador, list(zip(pruebas, times)))
+        insert_nadador_pruebas_if_not_exists(id_nadador, list(zip(pruebas, times)))
 
     except sqlite3.Error as err:
         print("Error:", err)
@@ -409,8 +409,8 @@ def cancheo():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    #app.run(debug=True)
     if not os.path.exists("PDFs"):
         os.makedirs("PDFs")
     create_table.create_database_if_not_exists()
-    #webview.start()
+    webview.start()

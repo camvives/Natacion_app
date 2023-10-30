@@ -159,14 +159,23 @@ def update_nadador_info(id_nadador, name, sex, cat, club):
     finally:
         con.close()
 
-def delete_and_insert_nadador_pruebas(id_nadador, pruebas):
-    """Deletes all events and inserts new events for a specific swimmer"""
+def insert_nadador_pruebas_if_not_exists(id_nadador, pruebas):
+    """Inserts new events for a specific swimmer if they don't already exist"""
     try:
         con = connect_db()
-        con.execute("DELETE FROM Nadadores_Pruebas WHERE IdNadador = ?", (id_nadador,))
+
+        cur = con.cursor()
+        cur.execute("SELECT IdPrueba FROM Nadadores_Pruebas WHERE IdNadador = ?", (id_nadador,))
+        existing_pruebas = [row[0] for row in cur.fetchall()]
+        id_pruebas = [int(prueba[0]) for prueba in pruebas]
+
+        for existing_prueba in existing_pruebas:
+            if existing_prueba not in id_pruebas:
+                con.execute("DELETE FROM Nadadores_Pruebas WHERE IdNadador = ? AND IdPrueba = ?",
+                            (id_nadador, existing_prueba))
 
         for prueba, time in pruebas:
-            con.execute("""INSERT INTO Nadadores_Pruebas
+            con.execute("""INSERT OR IGNORE INTO Nadadores_Pruebas
                         (IdNadador, IdPrueba, TiempoPreInscripcion, Fecha)
                         VALUES (?,?,?,?)""",
                         (id_nadador, int(prueba), time, datetime.date.today().strftime("%Y-%m-%d")))
@@ -258,7 +267,8 @@ def update_cant_nadadores(id_prueba, cant_nad):
     """Update the number of swimmers in an event when the order is generated"""
     try:
         con = connect_db()
-        con.execute("UPDATE Pruebas SET cantNadadores = ? WHERE IdPrueba = ?", (cant_nad, id_prueba))
+        con.execute("UPDATE Pruebas SET cantNadadores = ? WHERE IdPrueba = ?",
+                    (cant_nad, id_prueba))
         con.commit()
     except sqlite3.Error as err:
         print("Database error:", err)
@@ -673,7 +683,7 @@ def get_club_swimmers_info(id_club):
                         INNER JOIN Nadadores_Pruebas np on n.Id = np.IdNadador
                         INNER JOIN Pruebas p on p.IdPrueba = np.IdPrueba 
                         WHERE n.Idclub = ?
-                        ORDER BY p.IdPrueba, n.NombreApellido
+                        ORDER BY p.IdPrueba, np.Pileta, np.Orden
                     """, (id_club,))
         rows = cur.fetchall()
     except sqlite3.Error as err:
