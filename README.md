@@ -24,7 +24,7 @@ Además se incluye un ordenamiento recreativo que permite ordenar a los nadadore
 - "Cancheo": creación de reportes en formato PDF por club, listando todas las pruebas de sus nadadores, e indicando serie y andarivel en el cual compiten.
 
 ## Stack Tecnológico
-![Alt text](images\image-1.png)
+![Alt text](images/image-1.png)
 ### Capa de Datos
 En la capa de datos, se optó por utilizar SQLite, una herramienta de código abierto que facilita el almacenamiento de información en diversos dispositivos de manera sencilla, eficiente, potente y rápida. La elección de esta tecnología se basa en la simplicidad de los datos que necesitan ser registrados y en la velocidad requerida para escribir dicha información. Además, dado que la aplicación no maneja datos sensibles, no se necesita un nivel de seguridad más elevado que el proporcionado por este motor de base de datos.
 
