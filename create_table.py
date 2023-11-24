@@ -28,7 +28,6 @@ def create_database_if_not_exists():
                 "cantNadadores"	INTEGER DEFAULT 0,
                 PRIMARY KEY("IdPrueba")
             )
-        )
         """)
 
         conn.execute("""

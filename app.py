@@ -396,21 +396,25 @@ def cancheo():
         c.setFont("Helvetica", 9)
         index = 700
         for nadador in nadadores:
-            c.line(40, index-5, 570, index-5)
+            c.line(40, index - 5, 570, index - 5)
             c.drawString(50, index, f"{nadador[1]}")
             c.drawString(200, index, f"{nadador[0]}")
             c.drawString(230, index, f"{nadador[2]}")
             c.drawString(460, index, f"{nadador[3]}")
             c.drawString(530, index, f"{nadador[4]}")
             index -= 15
+            # Check if the content exceeds the page height
+            if index < 50:
+                c.showPage()  # Create a new page
+                index = 750  # Reset the index for the new page
 
         c.save()
     return render_template("cancheo.html")
 
 
 if __name__ == "__main__":
-    #app.run(debug=True)
+    app.run(debug=True)
     if not os.path.exists("PDFs"):
         os.makedirs("PDFs")
     create_table.create_database_if_not_exists()
-    webview.start()
+    #webview.start()
