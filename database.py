@@ -168,9 +168,11 @@ def insert_nadador_pruebas_if_not_exists(id_nadador, pruebas):
         cur.execute("SELECT IdPrueba FROM Nadadores_Pruebas WHERE IdNadador = ?", (id_nadador,))
         existing_pruebas = [row[0] for row in cur.fetchall()]
         id_pruebas = [int(prueba[0]) for prueba in pruebas]
+        print(id_pruebas)
 
         for existing_prueba in existing_pruebas:
-            if existing_prueba not in id_pruebas:
+            print(existing_prueba)
+            if existing_prueba in id_pruebas:
                 con.execute("DELETE FROM Nadadores_Pruebas WHERE IdNadador = ? AND IdPrueba = ?",
                             (id_nadador, existing_prueba))
 
