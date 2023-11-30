@@ -15,9 +15,9 @@ def convert_timestamp(mm_values: list, ss_values:list, sss_values:list):
     for minu, sec, sss in zipped_times:
         if '' in (minu, sec, sss):
             last_digits = random.randint(0, 100)
-            formatted_times.append(f'99:99:{int(last_digits):03}')
+            formatted_times.append(f'99:99:{int(last_digits):02}')
         else:
-            formatted_times.append(f'{int(minu):02}:{int(sec):02}:{int(sss):03}')
+            formatted_times.append(f'{int(minu):02}:{int(sec):02}:{int(sss):02}')
 
     return formatted_times
 

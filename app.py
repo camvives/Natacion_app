@@ -49,7 +49,8 @@ from database import (
     del_club,
     get_top_3_swimmers,
     get_club_swimmers_info,
-    update_cant_nadadores
+    update_cant_nadadores,
+    get_club_swimmers_result
 )
 
 app = Flask(__name__)
@@ -407,10 +408,43 @@ def cancheo():
             if index < 50:
                 c.showPage()  # Create a new page
                 index = 750  # Reset the index for the new page
-
+                c.setFont("Helvetica", 9)
         c.save()
     return render_template("cancheo.html")
 
+
+@app.route('/tiempos')
+def tiempos():
+    """Generate a series of PDF files containing competition times for each club"""
+    clubes = get_clubes_info()
+
+    for club in clubes:
+        nadadores = get_club_swimmers_result(club.id_club)
+        c = canvas.Canvas(f"PDFs/{club.descripcion}-Tiempos.pdf", pagesize=A4)
+        c.setFont("Helvetica", 24)
+        c.drawString(50, 750, f"{club.descripcion}")
+        c.setFont("Helvetica", 14)
+        c.drawString(50, 720, "Nombre y Apellido")
+        c.drawString(195, 720, "Prueba")
+        c.drawString(400, 720, "Pre-clasificacion")
+        c.drawString(520, 720, "Torneo")
+        c.line(40, 715, 570, 715)
+        c.setFont("Helvetica", 9)
+        index = 700
+        for nadador in nadadores:
+            c.line(40, index - 5, 570, index - 5)
+            c.drawString(50, index, f"{nadador[0]}")
+            c.drawString(190, index, f"{nadador[1]}")
+            c.drawString(430, index, f"{nadador[2]}")
+            c.drawString(525, index, f"{nadador[3]}")
+            index -= 15
+            # Check if the content exceeds the page height
+            if index < 50:
+                c.showPage()  # Create a new page
+                index = 750  # Reset the index for the new page
+                c.setFont("Helvetica", 9)
+        c.save()
+    return render_template("tiempos.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
