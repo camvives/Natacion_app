@@ -34,11 +34,8 @@ La capa de negocio está definida utilizando el framework de código abierto Fla
 ### Capa de Presentación
 Por último, en la capa de presentación se emplea una combinación de dos tecnologías: Bootstrap y Jinja2. Estas son tecnologías complementarias, que se utilizan en el desarrollo web para crear aplicaciones web atractivas y dinámicas. Bootstrap se encarga del diseño y la apariencia, mientras que Jinja2 se utiliza para generar contenido HTML de manera dinámica y basada en datos del servidor.
 
-
-## Diagrama Entidad-Relación
-![Alt text](images/image-2.png)
-## Modelo de datos
-![Alt text](images/image-3.png)
+# Para compilar
+pyinstaller  --add-data "templates;templates" --add-data "static;static" app.py                                    
 
 
 

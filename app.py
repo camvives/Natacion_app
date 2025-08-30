@@ -344,14 +344,14 @@ def cancheo(comp_type):
         if comp_type == 1:
             nadadores = get_club_swimmers_info(club.id_club)
             file = f"PDFs/Competitivo/{club.descripcion}.pdf"
-            type = 'Competitivo'
+            c_type = 'Competitivo'
         else:
             nadadores = get_club_swimmers_info_rec(club.id_club)
             file = f"PDFs/Recreativo/{club.descripcion}.pdf"
-            type = 'Recreativo'
+            c_type = 'Recreativo'
         c = canvas.Canvas(file, pagesize=A4)
         c.setFont("Helvetica", 24)
-        c.drawString(50, 750, f"{club.descripcion} - {type}")
+        c.drawString(50, 750, f"{club.descripcion} - {c_type}")
         c.setFont("Helvetica", 14)
         c.drawString(50, 720, "Nombre y Apellido")
         c.drawString(195, 720, "Nro")
