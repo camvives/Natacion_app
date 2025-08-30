@@ -1,8 +1,10 @@
 
 *.toc
-__pycache__/create_table.cpython-310.pyc
+/__pycache__
 *.spec
 *.pyc
 /dist
 /build
 *.pyc
+.venv
+*.db

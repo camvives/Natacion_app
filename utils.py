@@ -87,7 +87,3 @@ def order_pools(nadadores_prueba: list):
 
     return piletas
 
-
-def order_swimmers_rec(nadadores_pruebas: list):
-    """Asign randomly a pool number and a lane number for each swimmer in an event"""
-    return nadadores_pruebas
