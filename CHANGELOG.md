@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - Separar cancheo recreativo de competitivo para que se pueda elegir uno u otro
+- Bug en cambiar las pruebas de nadador ya creado
 
 
 ## [1.11] - 2025-08-30
@@ -27,4 +28,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
 ## Known issues to fix
-- Bug en cambiar las pruebas de nadador ya creado
+- 
