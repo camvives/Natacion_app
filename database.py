@@ -695,6 +695,30 @@ def get_club_swimmers_info(id_club):
         con.close()
     return rows
 
+def get_club_swimmers_info_rec(id_club):
+    """Get all the swimmers and events where registered for a club in recreative event"""
+    try:
+        con = connect_db()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("""SELECT  p.IdPrueba,
+                        n.NombreApellido, p.descripcion as 'Prueba',
+                        np.PiletaRec as 'Serie', np.OrdenRec as 'Andarivel'
+                        FROM Nadadores n
+                        INNER JOIN Nadadores_Pruebas np on n.Id = np.IdNadador
+                        INNER JOIN Pruebas p on p.IdPrueba = np.IdPrueba 
+                        WHERE n.Idclub = ?
+                        ORDER BY p.IdPrueba, np.PiletaRec, np.OrdenRec
+                    """, (id_club,))
+        rows = cur.fetchall()
+    except sqlite3.Error as err:
+        print("Database error:", err)
+        rows = []
+    finally:
+        con.close()
+    return rows
+
+
 def get_club_swimmers_result(id_club):
     """Get all the swimmers and events with competition time for a club"""
     try:

@@ -335,16 +335,23 @@ def add_club():
 
     return list_clubes()
 
-@app.route('/cancheo')
-def cancheo():
+@app.route('/cancheo/<int:comp_type>')
+def cancheo(comp_type):
     """Generate a series of PDF files containing competition information for each club"""
     clubes = get_clubes_info()
 
     for club in clubes:
-        nadadores = get_club_swimmers_info(club.id_club)
-        c = canvas.Canvas(f"PDFs/{club.descripcion}.pdf", pagesize=A4)
+        if comp_type == 1:
+            nadadores = get_club_swimmers_info(club.id_club)
+            file = f"PDFs/Competitivo/{club.descripcion}.pdf"
+            type = 'Competitivo'
+        else:
+            nadadores = get_club_swimmers_info_rec(club.id_club)
+            file = f"PDFs/Recreativo/{club.descripcion}.pdf"
+            type = 'Recreativo'
+        c = canvas.Canvas(file, pagesize=A4)
         c.setFont("Helvetica", 24)
-        c.drawString(50, 750, f"{club.descripcion}")
+        c.drawString(50, 750, f"{club.descripcion} - {type}")
         c.setFont("Helvetica", 14)
         c.drawString(50, 720, "Nombre y Apellido")
         c.drawString(195, 720, "Nro")
@@ -408,5 +415,10 @@ if __name__ == "__main__":
     app.run(debug=True)
     if not os.path.exists("PDFs"):
         os.makedirs("PDFs")
+    if not os.path.exists("PDFs/Competitivo"):
+        os.makedirs("PDFs/Competitivo")
+    if not os.path.exists("PDFs/Recreativo"):
+        os.makedirs("PDFs/Recreativo")
+
     create_table.create_database_if_not_exists()
-    webview.start()
+    #webview.start()
