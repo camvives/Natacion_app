@@ -1,57 +1,15 @@
 """Flask routes to run application"""
-import sqlite3
 import os
+import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 import webview
+
 import create_table
 from models import Nadador, NadadorPrueba, Prueba, Categoria, Club
-from utils import (
-    convert_timestamp,
-    order_swimmers_comp,
-    order_pools,
-    convert_one_timestamp
-)
-from database import (
-    get_pruebas_info,
-    add_nadador,
-    get_categorias,
-    get_clubes,
-    get_pruebas,
-    get_nadadores_info,
-    get_nadador_info,
-    get_nadador_pruebas,
-    update_nadador_info,
-    insert_nadador_pruebas_if_not_exists,
-    delete_nadador,
-    get_all_pruebas_grouped,
-    get_nadadores_prueba,
-    update_nadador_pruebas,
-    get_ordered_swimmers,
-    get_one_prueba,
-    get_nadadores_prueba_rec,
-    update_nadador_pruebas_rec,
-    get_ordered_swimmers_rec,
-    insert_comp_time,
-    del_comp_time,
-    get_ranked_swimmers,
-    update_prueba,
-    del_prueba,
-    insert_prueba,
-    get_categorias_info,
-    update_categoria,
-    insert_categoria,
-    del_categoria,
-    get_clubes_info,
-    update_club,
-    insert_club,
-    del_club,
-    get_top_3_swimmers,
-    get_club_swimmers_info,
-    update_cant_nadadores,
-    get_club_swimmers_result
-)
+from utils import convert_timestamp, order_swimmers_comp, order_pools, convert_one_timestamp
+from database import *
 
 app = Flask(__name__)
 window = webview.create_window('Natacion App', app)
@@ -451,4 +409,4 @@ if __name__ == "__main__":
     if not os.path.exists("PDFs"):
         os.makedirs("PDFs")
     create_table.create_database_if_not_exists()
-    #webview.start()
+    webview.start()
