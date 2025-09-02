@@ -160,48 +160,23 @@ def update_nadador_info(id_nadador, name, sex, cat, club):
         con.close()
 
 def insert_nadador_pruebas_if_not_exists(id_nadador, pruebas):
-    """
-    Sincroniza las pruebas de un nadador con la lista dada.
-    - Elimina pruebas que no estén en la lista nueva.
-    - Inserta nuevas pruebas.
-    - Actualiza solo los campos que se pasan.
-    """
+    """Inserta o actualiza pruebas de un nadador usando INSERT OR REPLACE."""
     try:
         con = connect_db()
         cur = con.cursor()
 
-        # Convertir a int para consistencia
-        id_pruebas_nuevas = [int(p[0]) for p in pruebas]
+        # Preparar lista de pruebas para insertar/reemplazar
+        datos = [
+            (id_nadador, int(prueba), tiempo, datetime.date.today().strftime("%Y-%m-%d"))
+            for prueba, tiempo in pruebas
+        ]
 
-        # Borrar pruebas existentes que NO estén en la lista nueva
-        if id_pruebas_nuevas:
-            cur.execute(f"""
-                DELETE FROM Nadadores_Pruebas
-                WHERE IdNadador = ? AND IdPrueba NOT IN ({','.join('?'*len(id_pruebas_nuevas))})
-            """, (id_nadador, *id_pruebas_nuevas))
-        else:
-            cur.execute("DELETE FROM Nadadores_Pruebas WHERE IdNadador = ?", (id_nadador,))
-
-        # Preparar los datos a insertar o actualizar
-        today = datetime.date.today().strftime("%Y-%m-%d")
-        datos = []
-        for prueba_id, tiempo in pruebas:
-            datos.append({
-                "IdNadador": id_nadador,
-                "IdPrueba": int(prueba_id),
-                "Fecha": today,
-                "TiempoPreInscripcion": tiempo
-            })
-
-        # Insertar o reemplazar usando PRIMARY KEY
-        for d in datos:
-            cur.execute("""
-                INSERT INTO Nadadores_Pruebas (IdNadador, IdPrueba, Fecha, TiempoPreInscripcion)
-                VALUES (:IdNadador, :IdPrueba, :Fecha, :TiempoPreInscripcion)
-                ON CONFLICT(IdNadador, IdPrueba) DO UPDATE SET
-                    Fecha = excluded.Fecha,
-                    TiempoPreInscripcion = excluded.TiempoPreInscripcion
-            """, d)
+        # Insertar o reemplazar
+        cur.executemany("""
+            INSERT OR REPLACE INTO Nadadores_Pruebas
+            (IdNadador, IdPrueba, TiempoPreInscripcion, Fecha)
+            VALUES (?, ?, ?, ?)
+        """, datos)
 
         con.commit()
 

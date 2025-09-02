@@ -23,8 +23,10 @@ def convert_timestamp(mm_values: list, ss_values:list, sss_values:list):
 
 def convert_one_timestamp(minu:str, sec:str, sss:str):
     """Converts values into timestamp mm:ss:sss"""
+    # Right-pad with zeros to always have 3 digits
+    ms = sss.ljust(3, "0")[:3]
 
-    timestamp = f'{int(minu):02}:{int(sec):02}:{int(sss):03}'
+    timestamp = f'{int(minu):02}:{int(sec):02}:{ms:03}'
 
     return timestamp
 

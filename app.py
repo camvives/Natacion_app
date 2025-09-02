@@ -133,6 +133,31 @@ def orden_recreativo():
 
     return render_template("recreativo.html", pruebas=pruebas)
 
+@app.route('/orderrec_all', methods=['POST'])
+def orderrec_all():
+    """Asign randomly a pool number and a lane number for each swimmer in all events"""
+    pruebas = get_all_pruebas_grouped()
+    for prueba in pruebas:
+        p = dict(prueba)
+        nadadores_prueba = list(get_nadadores_prueba_rec(p.get('IdPrueba')))
+        nadadores_ordenados = order_swimmers_comp(nadadores_prueba)
+
+        update_nadador_pruebas_rec(nadadores_ordenados, p.get('IdPrueba'))
+    return redirect(url_for('orden_recreativo'))
+
+@app.route('/ordercomp_all', methods=['POST'])
+def ordercomp_all():
+    """Asign a pool number and a lane number for each swimmer in all events"""
+    pruebas = get_all_pruebas_grouped()
+    for prueba in pruebas:
+        p = dict(prueba)
+        nadadores_prueba = list(get_nadadores_prueba(p.get('IdPrueba')))
+        nadadores_ordenados = order_swimmers_comp(nadadores_prueba)
+
+        update_nadador_pruebas(nadadores_ordenados, p.get('IdPrueba'))
+        update_cant_nadadores(p.get('IdPrueba'), len(nadadores_ordenados))
+    return redirect(url_for('orden_competitivo'))
+
 @app.route('/ordercomp/<int:id_prueba>/<int:cant_nad>', methods=['POST'])
 def ordercomp(id_prueba, cant_nad):
     """Asign a pool number and a lane number for each swimmer in an event"""

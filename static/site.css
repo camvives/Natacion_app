@@ -15,7 +15,7 @@
     left: 0;
     width: 100%;
     height: 100px;
-    background: url(https://1.bp.blogspot.com/-xQUc-TovqDk/XdxogmMqIRI/AAAAAAAACvI/AizpnE509UMGBcTiLJ58BC6iViPYGYQfQCLcBGAsYHQ/s1600/wave.png);
+    background: url('./background.png');
     background-size: 1000px 100px
   }
   section .air.air1{

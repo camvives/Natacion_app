@@ -5,7 +5,14 @@ Orden Competitivo
 {% block content %}
 <section>
     <div class="container">
-        <h2 class="mt-4 mb-2">Orden Competitivo</h2>
+        <div class="d-flex align-items-center mt-4 mb-2">
+            <h2 class="mb-0 mr-4">Orden competitivo</h2>
+            <form action="{{ url_for('ordercomp_all') }}" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-secondary" style="display: flex; align-items: center; margin-left: 5px; margin-top: 5px">
+                <i class="fas fa-flask" title="Generar orden para todas las pruebas"></i>
+            </button>
+            </form>
+        </div>
         <table id="example" class="display" style="width:100%;">
             <thead>
                 <tr>
